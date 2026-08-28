@@ -1,0 +1,338 @@
+openapi: 3.0.3
+info:
+  title: ChatMessageE2E REST API
+  description: REST API for 1-1 End-to-End Encrypted Chat with 4-Layer Handshake Verification
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /auth/google:
+    post:
+      summary: Authenticate with Google ID Token
+      description: Verifies Google OpenID Connect token and issues application JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idToken
+              properties:
+                idToken:
+                  type: string
+                  description: Google ID Token obtained from client-side Google SDK
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  expiresIn:
+                    type: integer
+                  user:
+                    $ref: '#/components/schemas/UserProfileDto'
+        '401':
+          $ref: '#/components/schemas/ApiError'
+
+  /users/search:
+    get:
+      summary: Search user by exact Gmail address
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+          description: Exact Gmail address to search
+      responses:
+        '200':
+          description: User search result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileDto'
+        '404':
+          description: No user found with this exact Gmail address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /users/keys:
+    post:
+      summary: Register or update user public key bundle
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicKeyBundleDto'
+      responses:
+        '200':
+          description: Public keys registered successfully
+    get:
+      summary: Get user public key bundle
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicKeyBundleDto'
+
+  /conversations:
+    get:
+      summary: List user conversations
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConversationSummaryDto'
+    post:
+      summary: Initiate 4-layer handshake conversation invitation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - recipientEmail
+                - initiatorPublicKey
+              properties:
+                recipientEmail:
+                  type: string
+                initiatorPublicKey:
+                  type: string
+      responses:
+        '201':
+          description: Conversation initiated (Layer 1 passed, Layer 2 pending)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationDetailDto'
+
+  /conversations/{id}/handshake/accept:
+    post:
+      summary: Accept conversation invitation (Layer 2) & complete Layer 3 key exchange
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - recipientPublicKey
+              properties:
+                recipientPublicKey:
+                  type: string
+      responses:
+        '200':
+          description: Handshake accepted, Layer 4 safety challenge generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HandshakeStateDto'
+
+  /conversations/{id}/handshake/confirm-safety-code:
+    post:
+      summary: Confirm 6-digit visual safety code (Layer 4)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - safetyCode
+              properties:
+                safetyCode:
+                  type: string
+      responses:
+        '200':
+          description: Layer 4 confirmed. Conversation is now VERIFIED_ACTIVE.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationDetailDto'
+
+  /media/upload:
+    post:
+      summary: Upload client-encrypted image blob
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - encryptedFile
+                - conversationId
+              properties:
+                encryptedFile:
+                  type: string
+                  format: binary
+                conversationId:
+                  type: string
+      responses:
+        '201':
+          description: Encrypted media blob stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mediaUrl:
+                    type: string
+                  mediaId:
+                    type: string
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserProfileDto:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        displayName:
+          type: string
+        avatarUrl:
+          type: string
+        isOnline:
+          type: boolean
+
+    PublicKeyBundleDto:
+      type: object
+      required:
+        - userId
+        - identityPublicKey
+        - signedPreKey
+      properties:
+        userId:
+          type: string
+        identityPublicKey:
+          type: string
+        signedPreKey:
+          type: string
+        preKeySignature:
+          type: string
+        keyVersion:
+          type: integer
+
+    ConversationSummaryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        peerUser:
+          $ref: '#/components/schemas/UserProfileDto'
+        status:
+          type: string
+          enum: [INITIATING, PENDING_ACCEPTANCE, HANDSHAKE_IN_PROGRESS, VERIFIED_ACTIVE, BLOCKED]
+        lastMessageSnippet:
+          type: string
+        lastMessageAt:
+          type: string
+          format: date-time
+        unreadCount:
+          type: integer
+
+    ConversationDetailDto:
+      type: object
+      properties:
+        id:
+          type: string
+        participantAId:
+          type: string
+        participantBId:
+          type: string
+        status:
+          type: string
+        handshake:
+          $ref: '#/components/schemas/HandshakeStateDto'
+
+    HandshakeStateDto:
+      type: object
+      properties:
+        layer1Status:
+          type: string
+        layer2Status:
+          type: string
+        layer3Status:
+          type: string
+        layer4Status:
+          type: string
+        safetyCode:
+          type: string
+        fullFingerprintHex:
+          type: string
+
+    ApiError:
+      type: object
+      required:
+        - status
+        - errorCode
+        - message
+        - traceId
+      properties:
+        status:
+          type: integer
+        errorCode:
+          type: string
+        message:
+          type: string
+        traceId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
