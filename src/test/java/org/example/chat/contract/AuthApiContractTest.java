@@ -47,7 +47,7 @@ class AuthApiContractTest {
     private UserPublicKeyRepository userPublicKeyRepository;
 
     @Test
-    @DisplayName("Contract: POST /api/v1/auth/google should authenticate and return tokens")
+    @DisplayName("Contract: POST /api/v1/auth/google should authenticate and return tokens and set ACCESS_TOKEN cookie")
     void testGoogleAuthEndpoint() throws Exception {
         UserProfile user = UserProfile.builder()
                 .id("user_test_123")
@@ -71,7 +71,53 @@ class AuthApiContractTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.user.email").value("alice@gmail.com"))
-                .andExpect(jsonPath("$.user.displayName").value("alice"));
+                .andExpect(jsonPath("$.user.displayName").value("alice"))
+                .andExpect(result -> {
+                    String setCookie = result.getResponse().getHeader("Set-Cookie");
+                    org.junit.jupiter.api.Assertions.assertNotNull(setCookie);
+                    org.junit.jupiter.api.Assertions.assertTrue(setCookie.contains("ACCESS_TOKEN="));
+                    org.junit.jupiter.api.Assertions.assertTrue(setCookie.contains("HttpOnly"));
+                });
+    }
+
+    @Test
+    @DisplayName("Contract: GET /api/v1/auth/me should authenticate using ACCESS_TOKEN cookie")
+    void testAuthMeWithCookie() throws Exception {
+        UserProfile user = UserProfile.builder()
+                .id("user_test_123")
+                .googleSubjectId("google-sub-alice@gmail.com")
+                .email("alice@gmail.com")
+                .displayName("Alice")
+                .avatarUrl("https://avatar.com/alice.png")
+                .createdAt(Instant.now())
+                .lastSeenAt(Instant.now())
+                .isOnline(true)
+                .build();
+
+        when(userRepository.findById("user_test_123")).thenReturn(Optional.of(user));
+
+        String token = jwtTokenProvider.generateToken("user_test_123", "alice@gmail.com", "Alice");
+
+        jakarta.servlet.http.Cookie authCookie = new jakarta.servlet.http.Cookie("ACCESS_TOKEN", token);
+
+        mockMvc.perform(get("/api/v1/auth/me")
+                        .cookie(authCookie))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("user_test_123"))
+                .andExpect(jsonPath("$.email").value("alice@gmail.com"));
+    }
+
+    @Test
+    @DisplayName("Contract: POST /api/v1/auth/logout should clear ACCESS_TOKEN cookie")
+    void testAuthLogout() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(result -> {
+                    String setCookie = result.getResponse().getHeader("Set-Cookie");
+                    org.junit.jupiter.api.Assertions.assertNotNull(setCookie);
+                    org.junit.jupiter.api.Assertions.assertTrue(setCookie.contains("ACCESS_TOKEN="));
+                    org.junit.jupiter.api.Assertions.assertTrue(setCookie.contains("Max-Age=0"));
+                });
     }
 
     @Test

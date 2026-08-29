@@ -19,14 +19,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem('auth_user');
     return saved ? JSON.parse(saved) : null;
   });
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('auth_token'));
+  const [token, setToken] = useState<string | null>(null);
   const [publicKeyBase64, setPublicKeyBase64] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize or load local cryptographic identity keys
+  // Initialize or load local cryptographic identity keys and restore session
   useEffect(() => {
-    async function initKeys() {
+    async function initAuthAndKeys() {
       try {
+        // 1. Try to restore session from HttpOnly Cookie
+        let currentUser: UserProfileDto | null = null;
+        try {
+          currentUser = await apiClient.getCurrentUser();
+          setUser(currentUser);
+          localStorage.setItem('auth_user', JSON.stringify(currentUser));
+        } catch {
+          // Cookie expired or not logged in
+          setUser(null);
+          localStorage.removeItem('auth_user');
+        }
+
+        // 2. Load or generate local cryptographic identity keys
         let keys = await loadIdentityKeyPair();
         if (!keys) {
           const generated = await generateIdentityKeyPair();
@@ -35,25 +48,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         setPublicKeyBase64(keys.publicKeyBase64);
 
-        // If user is already logged in, register public keys
-        if (token && keys.publicKeyBase64) {
-          apiClient.setToken(token);
+        // 3. If authenticated, ensure public keys are registered on backend
+        if (currentUser && keys.publicKeyBase64) {
           await apiClient.registerPublicKeyBundle({
-            userId: user?.id || '',
+            userId: currentUser.id,
             identityPublicKey: keys.publicKeyBase64,
             signedPreKey: keys.publicKeyBase64, // active pre-key
             preKeySignature: 'auto-signed',
           }).catch(console.warn);
         }
       } catch (e) {
-        console.error('Failed to init crypto keys', e);
+        console.error('Failed to init auth/crypto keys', e);
       } finally {
         setIsLoading(false);
       }
     }
 
-    initKeys();
-  }, [token]);
+    initAuthAndKeys();
+  }, []);
 
   const loginWithGoogleToken = async (idToken: string) => {
     setIsLoading(true);
@@ -84,7 +96,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await apiClient.logout();
+    } catch (e) {
+      console.warn('Logout request error', e);
+    }
     apiClient.setToken(null);
     setToken(null);
     setUser(null);
@@ -105,3 +122,4 @@ export function useAuth() {
   }
   return context;
 }
+

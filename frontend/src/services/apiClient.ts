@@ -39,15 +39,10 @@ export interface ConversationDetailDto {
 }
 
 class ApiClient {
-  private token: string | null = localStorage.getItem('auth_token');
+  private token: string | null = null;
 
   setToken(token: string | null) {
     this.token = token;
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    } else {
-      localStorage.removeItem('auth_token');
-    }
   }
 
   getToken(): string | null {
@@ -66,6 +61,7 @@ class ApiClient {
 
     const response = await fetch(endpoint, {
       ...options,
+      credentials: 'include',
       headers,
     });
 
@@ -79,7 +75,9 @@ class ApiClient {
       throw new Error(errorData.message || `HTTP ${response.status}: Request failed`);
     }
 
-    return await response.json() as T;
+    // Return null or empty object if 204 or no content
+    const text = await response.text();
+    return text ? JSON.parse(text) : ({} as T);
   }
 
   // Auth APIs
@@ -88,6 +86,17 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ idToken }),
     });
+  }
+
+  async getCurrentUser(): Promise<UserProfileDto> {
+    return await this.request('/api/v1/auth/me');
+  }
+
+  async logout(): Promise<void> {
+    await this.request('/api/v1/auth/logout', {
+      method: 'POST',
+    });
+    this.token = null;
   }
 
   // User APIs
@@ -148,6 +157,7 @@ class ApiClient {
 
     const response = await fetch('/api/v1/media/upload', {
       method: 'POST',
+      credentials: 'include',
       headers,
       body: formData,
     });
@@ -168,3 +178,4 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient();
+

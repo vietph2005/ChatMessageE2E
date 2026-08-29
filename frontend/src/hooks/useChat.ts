@@ -35,19 +35,19 @@ export function useChat() {
 
   // Refresh conversation list
   const loadConversations = useCallback(async () => {
-    if (!token) return;
+    if (!user) return;
     try {
       const list = await apiClient.listConversations();
       setConversations(list);
     } catch (e) {
       console.error('Failed to load conversations', e);
     }
-  }, [token]);
+  }, [user]);
 
   // Connect STOMP WebSocket on login
   useEffect(() => {
-    if (token) {
-      stompChatService.connect(token, () => {
+    if (user) {
+      stompChatService.connect(token || '', () => {
         loadConversations();
       });
 
@@ -63,12 +63,12 @@ export function useChat() {
         stompChatService.disconnect();
       };
     }
-  }, [token, loadConversations]);
+  }, [user, token, loadConversations]);
 
   // Load details and derive E2EE session key when active conversation changes
   useEffect(() => {
     async function setupConversationSession() {
-      if (!activeConversationId || !token || !user) return;
+      if (!activeConversationId || !user) return;
 
       setIsLoading(true);
       try {
@@ -104,7 +104,7 @@ export function useChat() {
     }
 
     setupConversationSession();
-  }, [activeConversationId, token, user]);
+  }, [activeConversationId, user]);
 
   // Subscribe to real-time messages in active conversation
   useEffect(() => {
@@ -121,7 +121,8 @@ export function useChat() {
             plaintext = await decryptText(stompMsg.ciphertext, stompMsg.initializationVector, activeSessionKey);
           } else if (stompMsg.messageType === 'IMAGE' && stompMsg.mediaUrl) {
             const res = await fetch(stompMsg.mediaUrl, {
-              headers: { Authorization: `Bearer ${token}` }
+              credentials: 'include',
+              headers: token ? { Authorization: `Bearer ${token}` } : {}
             });
             const encryptedBytes = await res.arrayBuffer();
             const blob = await decryptMedia(encryptedBytes, stompMsg.initializationVector, activeSessionKey, 'image/png');
