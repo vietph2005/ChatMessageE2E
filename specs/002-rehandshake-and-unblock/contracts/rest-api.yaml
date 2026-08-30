@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: ChatMessageE2E Re-Handshake & Unblock REST API
+  version: 1.0.0
+  description: REST API specification for initiating cryptographic re-handshake and unblocking users.
+
+paths:
+  /api/v1/conversations/{conversationId}/handshake/re-initiate:
+    post:
+      summary: Re-initiate 4-layer cryptographic handshake for an existing conversation
+      description: Called when a participant detects a key change or wishes to re-key the E2EE session.
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - initiatorPublicKey
+              properties:
+                initiatorPublicKey:
+                  type: string
+                  description: SPKI Base64 encoded ECDH P-256 public key of the requesting user.
+      responses:
+        '200':
+          description: Re-handshake initiated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationDetailDto'
+        '400':
+          description: Invalid request or conversation state.
+        '403':
+          description: User is not a participant in the conversation.
+        '404':
+          description: Conversation or Handshake record not found.
+
+  /api/v1/users/unblock:
+    post:
+      summary: Unblock a previously blocked user
+      description: Removes the specified user from the authenticated user's block list and restores conversation state.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: string
+                  description: The ID of the user to unblock.
+      responses:
+        '200':
+          description: User unblocked successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  unblockedUserId:
+                    type: string
+        '400':
+          description: Invalid target user ID.
+        '404':
+          description: User not found.
+
+components:
+  schemas:
+    ConversationDetailDto:
+      type: object
+      properties:
+        id:
+          type: string
+        participantAId:
+          type: string
+        participantBId:
+          type: string
+        status:
+          type: string
+          enum: [INITIATING, PENDING_ACCEPTANCE, HANDSHAKE_IN_PROGRESS, VERIFIED_ACTIVE, BLOCKED]
+        handshake:
+          $ref: '#/components/schemas/HandshakeDto'
+
+    HandshakeDto:
+      type: object
+      properties:
+        layer1Status:
+          type: string
+        layer2Status:
+          type: string
+        layer3Status:
+          type: string
+        layer4Status:
+          type: string
+        safetyCode:
+          type: string
+        fullFingerprintHex:
+          type: string

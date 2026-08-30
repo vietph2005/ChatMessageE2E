@@ -29,6 +29,7 @@ export function useChat() {
   const [activeSessionKey, setActiveSessionKey] = useState<CryptoKey | null>(null);
   const [pendingHandshakeNotification, setPendingHandshakeNotification] = useState<HandshakeNotificationEvent | null>(null);
   const [showHandshakeModal, setShowHandshakeModal] = useState<boolean>(false);
+  const [isKeyMismatched, setIsKeyMismatched] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -55,6 +56,9 @@ export function useChat() {
       const unsubscribeNotifications = stompChatService.subscribeToUserNotifications((event) => {
         console.log('[Notification Received]', event);
         setPendingHandshakeNotification(event);
+        if (event.eventType === 'KEY_CHANGED' && event.conversationId === activeConversationId) {
+          setIsKeyMismatched(true);
+        }
         loadConversations();
       });
 
@@ -63,7 +67,7 @@ export function useChat() {
         stompChatService.disconnect();
       };
     }
-  }, [user, token, loadConversations]);
+  }, [user, token, activeConversationId, loadConversations]);
 
   // Load details and derive E2EE session key when active conversation changes
   useEffect(() => {
@@ -79,12 +83,26 @@ export function useChat() {
         const localCached = await getMessagesByConversation(activeConversationId);
         setMessages(localCached);
 
-        // If conversation is VERIFIED_ACTIVE, derive session key
-        if (detail.status === 'VERIFIED_ACTIVE' || detail.status === 'HANDSHAKE_IN_PROGRESS') {
+        // Check for key mismatch
+        const myKeys = await loadIdentityKeyPair();
+        let keyMismatch = false;
+
+        if (detail.handshake && myKeys) {
+          const mySavedKeyInHandshake = detail.participantAId === user.id
+            ? detail.handshake.initiatorPublicKey
+            : detail.handshake.recipientPublicKey;
+
+          if (mySavedKeyInHandshake && mySavedKeyInHandshake !== myKeys.publicKeyBase64) {
+            keyMismatch = true;
+          }
+        }
+        setIsKeyMismatched(keyMismatch);
+
+        // If conversation is VERIFIED_ACTIVE and keys are consistent, derive session key
+        if (!keyMismatch && (detail.status === 'VERIFIED_ACTIVE' || detail.status === 'HANDSHAKE_IN_PROGRESS')) {
           const peerId = detail.participantAId === user.id ? detail.participantBId : detail.participantAId;
           const peerBundle = await apiClient.getPeerPublicKeyBundle(peerId);
 
-          const myKeys = await loadIdentityKeyPair();
           if (myKeys && peerBundle.identityPublicKey) {
             const peerPublicKey = await importPeerPublicKey(peerBundle.identityPublicKey);
             const derivedKey = await deriveSessionKey(myKeys.keyPair.privateKey, peerPublicKey, activeConversationId);
@@ -246,6 +264,43 @@ export function useChat() {
     await loadConversations();
   };
 
+  // Re-initiate Handshake on key mismatch
+  const reInitiateHandshake = async () => {
+    if (!activeConversationId) return;
+    const myKeys = await loadIdentityKeyPair();
+    if (!myKeys) return;
+
+    setIsLoading(true);
+    try {
+      const updated = await apiClient.reInitiateHandshake(activeConversationId, myKeys.publicKeyBase64);
+      setActiveConversationDetail(updated);
+      setIsKeyMismatched(false);
+      setShowHandshakeModal(true);
+      await loadConversations();
+    } catch (e) {
+      console.error('Failed to re-initiate handshake', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Unblock Contact
+  const unblockContact = async (peerUserId: string) => {
+    setIsLoading(true);
+    try {
+      await apiClient.unblockUser(peerUserId);
+      await loadConversations();
+      if (activeConversationId) {
+        const detail = await apiClient.getConversationDetail(activeConversationId);
+        setActiveConversationDetail(detail);
+      }
+    } catch (e) {
+      console.error('Failed to unblock contact', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     conversations,
     activeConversationId,
@@ -253,11 +308,13 @@ export function useChat() {
     messages,
     isTyping,
     isLoading,
+    isKeyMismatched,
     showHandshakeModal,
     pendingHandshakeNotification,
     setActiveConversationId,
     setShowHandshakeModal,
     setPendingHandshakeNotification,
+    setIsKeyMismatched,
     sendTextMessage,
     sendImageAttachment,
     unsendChatMessage,
@@ -265,6 +322,8 @@ export function useChat() {
     startNewChat,
     acceptHandshake,
     confirmSafetyCode,
+    reInitiateHandshake,
+    unblockContact,
     loadConversations,
   };
 }

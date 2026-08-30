@@ -77,5 +77,22 @@ public class UserService {
                 .orElseThrow(() -> new DomainException("KEYS_NOT_FOUND", "Public keys not found for user: " + userId, HttpStatus.NOT_FOUND));
     }
 
+    public void blockUser(String userId, String targetUserId) {
+        UserProfile user = getUserById(userId);
+        if (user.getBlockedUserIds() == null) {
+            user.setBlockedUserIds(new java.util.HashSet<>());
+        }
+        user.getBlockedUserIds().add(targetUserId);
+        userRepository.save(user);
+    }
+
+    public void unblockUser(String userId, String targetUserId) {
+        UserProfile user = getUserById(userId);
+        if (user.getBlockedUserIds() != null) {
+            user.getBlockedUserIds().remove(targetUserId);
+            userRepository.save(user);
+        }
+    }
+
     public record AuthResult(String accessToken, long expiresIn, UserProfile user) {}
 }

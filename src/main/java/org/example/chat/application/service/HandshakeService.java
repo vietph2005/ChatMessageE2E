@@ -148,6 +148,58 @@ public class HandshakeService {
         return savedConv;
     }
 
+    public HandshakeVerification reInitiateHandshake(String userId, String conversationId, String newPublicKey) {
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new DomainException("CONVERSATION_NOT_FOUND", "Conversation not found", HttpStatus.NOT_FOUND));
+
+        if (!userId.equals(conversation.getParticipantAId()) && !userId.equals(conversation.getParticipantBId())) {
+            throw new DomainException("UNAUTHORIZED_ACTION", "You are not a participant in this conversation", HttpStatus.FORBIDDEN);
+        }
+
+        UserProfile currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new DomainException("USER_NOT_FOUND", "User not found", HttpStatus.NOT_FOUND));
+
+        String peerId = userId.equals(conversation.getParticipantAId())
+                ? conversation.getParticipantBId()
+                : conversation.getParticipantAId();
+
+        HandshakeVerification handshake = handshakeRepository.findByConversationId(conversationId)
+                .orElseGet(() -> HandshakeVerification.builder()
+                        .conversationId(conversationId)
+                        .initiatorId(conversation.getParticipantAId())
+                        .recipientId(conversation.getParticipantBId())
+                        .build());
+
+        if (userId.equals(handshake.getInitiatorId())) {
+            handshake.setInitiatorPublicKey(newPublicKey);
+        } else {
+            handshake.setRecipientPublicKey(newPublicKey);
+        }
+
+        handshake.setLayer1Status(HandshakeVerification.LayerStatus.VERIFIED);
+        handshake.setLayer1VerifiedAt(Instant.now());
+        handshake.setLayer2Status(HandshakeVerification.LayerStatus.PENDING);
+        handshake.setLayer2AcceptedAt(null);
+        handshake.setLayer3Status(HandshakeVerification.LayerStatus.PENDING);
+        handshake.setLayer3ExchangedAt(null);
+        handshake.setLayer4Status(HandshakeVerification.LayerStatus.PENDING);
+        handshake.setLayer4ConfirmedAt(null);
+        handshake.setSafetyCode(null);
+        handshake.setFullFingerprintHex(null);
+        handshake.setVersion(handshake.getVersion() == null ? 2 : handshake.getVersion() + 1);
+
+        conversation.setStatus(Conversation.ConversationStatus.HANDSHAKE_IN_PROGRESS);
+        conversation.setUpdatedAt(Instant.now());
+        conversationRepository.save(conversation);
+
+        HandshakeVerification savedHandshake = handshakeRepository.save(handshake);
+
+        log.info("[Handshake] Re-handshake initiated for conversation: {} by user: {}", conversationId, userId);
+        notificationHandler.notifyKeyChanged(peerId, conversationId, currentUser);
+
+        return savedHandshake;
+    }
+
     public HandshakeVerification getHandshake(String conversationId) {
         return handshakeRepository.findByConversationId(conversationId)
                 .orElseThrow(() -> new DomainException("HANDSHAKE_NOT_FOUND", "Handshake record not found", HttpStatus.NOT_FOUND));

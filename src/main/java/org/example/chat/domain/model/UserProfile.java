@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -17,6 +19,10 @@ public class UserProfile {
     private String email;
     private String displayName;
     private String avatarUrl;
+
+    @Builder.Default
+    private Set<String> blockedUserIds = new HashSet<>();
+
     private Instant createdAt;
     private Instant lastSeenAt;
     private boolean isOnline;

@@ -29,12 +29,15 @@ export interface ConversationDetailDto {
   participantBId: string;
   status: string;
   handshake: {
+    initiatorPublicKey?: string;
+    recipientPublicKey?: string;
     layer1Status: string;
     layer2Status: string;
     layer3Status: string;
     layer4Status: string;
     safetyCode: string;
     fullFingerprintHex: string;
+    version?: number;
   };
 }
 
@@ -145,6 +148,13 @@ class ApiClient {
     });
   }
 
+  async reInitiateHandshake(conversationId: string, initiatorPublicKey: string): Promise<ConversationDetailDto> {
+    return await this.request(`/api/v1/conversations/${conversationId}/handshake/re-initiate`, {
+      method: 'POST',
+      body: JSON.stringify({ initiatorPublicKey }),
+    });
+  }
+
   async uploadEncryptedMedia(conversationId: string, encryptedBlob: Blob): Promise<{ mediaUrl: string; mediaId: string }> {
     const formData = new FormData();
     formData.append('encryptedFile', encryptedBlob, 'encrypted.bin');
@@ -171,6 +181,13 @@ class ApiClient {
 
   async blockUser(userId: string): Promise<void> {
     await this.request(`/api/v1/users/block`, {
+      method: 'POST',
+      body: JSON.stringify({ userId }),
+    });
+  }
+
+  async unblockUser(userId: string): Promise<void> {
+    await this.request(`/api/v1/users/unblock`, {
       method: 'POST',
       body: JSON.stringify({ userId }),
     });

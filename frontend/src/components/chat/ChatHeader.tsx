@@ -10,6 +10,7 @@ interface Props {
   conversationDetail: ConversationDetailDto | null;
   onBackMobile?: () => void;
   onBlocked: () => void;
+  onUnblocked?: () => void;
 }
 
 export const ChatHeader: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const ChatHeader: React.FC<Props> = ({
   conversationDetail,
   onBackMobile,
   onBlocked,
+  onUnblocked,
 }) => {
   const [showQrModal, setShowQrModal] = useState(false);
   const [showSecurityDrawer, setShowSecurityDrawer] = useState(false);
@@ -97,11 +99,20 @@ export const ChatHeader: React.FC<Props> = ({
             <Info className="w-4 h-4" />
           </button>
 
-          <BlockContactButton
-            peerUserId={peerUser.id}
-            peerDisplayName={peerUser.displayName}
-            onBlocked={onBlocked}
-          />
+          {conversationDetail?.status === 'BLOCKED' ? (
+            <button
+              onClick={onUnblocked}
+              className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs rounded-xl shadow-sm transition-all"
+            >
+              Unblock
+            </button>
+          ) : (
+            <BlockContactButton
+              peerUserId={peerUser.id}
+              peerDisplayName={peerUser.displayName}
+              onBlocked={onBlocked}
+            />
+          )}
         </div>
       </div>
 

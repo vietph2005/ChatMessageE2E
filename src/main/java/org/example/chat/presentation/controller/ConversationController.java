@@ -95,6 +95,20 @@ public class ConversationController {
         return ResponseEntity.ok(ConversationDto.ConversationDetailResponse.fromDomain(conversation, handshake));
     }
 
+    @PostMapping("/{id}/handshake/re-initiate")
+    public ResponseEntity<ConversationDto.ConversationDetailResponse> reInitiateHandshake(
+            @AuthenticationPrincipal ChatUserDetails userDetails,
+            @PathVariable("id") String conversationId,
+            @Valid @RequestBody ConversationDto.ReInitiateRequest request) {
+        HandshakeVerification handshake = handshakeService.reInitiateHandshake(
+                userDetails.getUserId(),
+                conversationId,
+                request.getInitiatorPublicKey()
+        );
+        Conversation conversation = conversationRepository.findById(conversationId).orElseThrow();
+        return ResponseEntity.ok(ConversationDto.ConversationDetailResponse.fromDomain(conversation, handshake));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ConversationDto.ConversationDetailResponse> getConversationDetail(
             @PathVariable("id") String conversationId) {

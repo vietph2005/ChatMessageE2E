@@ -26,6 +26,7 @@ public class HandshakeVerification {
 
     private String safetyCode; // 6-digit visual code
     private String fullFingerprintHex;
+    private Integer version;
 
     private Instant layer1VerifiedAt;
     private Instant layer2AcceptedAt;

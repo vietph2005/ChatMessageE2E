@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -27,6 +29,10 @@ public class UserDocument {
 
     private String displayName;
     private String avatarUrl;
+
+    @Builder.Default
+    private Set<String> blockedUserIds = new HashSet<>();
+
     private Instant createdAt;
     private Instant lastSeenAt;
     private boolean isOnline;

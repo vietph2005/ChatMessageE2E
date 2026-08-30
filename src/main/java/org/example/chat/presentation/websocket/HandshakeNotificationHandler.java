@@ -47,4 +47,15 @@ public class HandshakeNotificationHandler {
 
         messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", payload);
     }
+
+    public void notifyKeyChanged(String recipientUserId, String conversationId, UserProfile initiator) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("eventType", "KEY_CHANGED");
+        payload.put("conversationId", conversationId);
+        payload.put("initiator", UserProfileDto.fromDomain(initiator));
+        payload.put("timestamp", Instant.now().toString());
+
+        log.info("[WebSocket Notification] Pushing key changed event to user: {}", recipientUserId);
+        messagingTemplate.convertAndSendToUser(recipientUserId, "/queue/notifications", payload);
+    }
 }

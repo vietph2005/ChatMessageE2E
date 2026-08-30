@@ -7,7 +7,8 @@ import { MessageBubble } from '../chat/MessageBubble';
 import { ChatInputBar } from '../chat/ChatInputBar';
 import { TypingIndicator } from '../chat/TypingIndicator';
 import { HandshakeModal } from '../handshake/HandshakeModal';
-import { ShieldCheck, MessageCircle } from 'lucide-react';
+import { SafetyNumberAlertBanner } from '../chat/SafetyNumberAlertBanner';
+import { ShieldCheck, MessageCircle, Lock, Ban } from 'lucide-react';
 
 export const AppShell: React.FC = () => {
   const { user } = useAuth();
@@ -18,9 +19,11 @@ export const AppShell: React.FC = () => {
     messages,
     isTyping,
     isLoading,
+    isKeyMismatched,
     showHandshakeModal,
     setActiveConversationId,
     setShowHandshakeModal,
+    setIsKeyMismatched,
     sendTextMessage,
     sendImageAttachment,
     unsendChatMessage,
@@ -28,6 +31,8 @@ export const AppShell: React.FC = () => {
     startNewChat,
     acceptHandshake,
     confirmSafetyCode,
+    reInitiateHandshake,
+    unblockContact,
     loadConversations,
   } = useChat();
 
@@ -40,7 +45,8 @@ export const AppShell: React.FC = () => {
 
   const activeConversationSummary = conversations.find((c) => c.id === activeConversationId);
   const peerUser = activeConversationSummary?.peerUser;
-  const isVerified = activeConversationDetail?.status === 'VERIFIED_ACTIVE';
+  const isVerified = activeConversationDetail?.status === 'VERIFIED_ACTIVE' && !isKeyMismatched;
+  const isBlocked = activeConversationDetail?.status === 'BLOCKED';
   const isRecipient = activeConversationDetail?.participantBId === user?.id;
 
   return (
@@ -72,10 +78,36 @@ export const AppShell: React.FC = () => {
                 setActiveConversationId(null);
                 loadConversations();
               }}
+              onUnblocked={() => unblockContact(peerUser.id)}
             />
 
+            {/* Key Mismatch Warning Banner */}
+            {isKeyMismatched && (
+              <SafetyNumberAlertBanner
+                peerDisplayName={peerUser.displayName}
+                onVerify={reInitiateHandshake}
+                onDismiss={() => setIsKeyMismatched(false)}
+              />
+            )}
+
+            {/* Blocked Notice Banner */}
+            {isBlocked && (
+              <div className="p-3 bg-rose-500/10 border-b border-rose-500/20 flex items-center justify-between px-4">
+                <div className="flex items-center space-x-2 text-xs text-rose-300">
+                  <Ban className="w-4 h-4 text-rose-400" />
+                  <span>This contact is currently blocked. You cannot send or receive messages.</span>
+                </div>
+                <button
+                  onClick={() => unblockContact(peerUser.id)}
+                  className="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
+                >
+                  Unblock Contact
+                </button>
+              </div>
+            )}
+
             {/* Handshake Prompt Banner if not verified */}
-            {!isVerified && activeConversationDetail && (
+            {!isVerified && !isKeyMismatched && !isBlocked && activeConversationDetail && (
               <div className="p-3 bg-blue-600/15 border-b border-blue-500/30 flex items-center justify-between px-4">
                 <div className="flex items-center space-x-2 text-xs text-blue-200">
                   <ShieldCheck className="w-4 h-4 text-cyan-400" />
@@ -92,6 +124,14 @@ export const AppShell: React.FC = () => {
 
             {/* Messages Feed */}
             <div className="flex-1 overflow-y-auto p-4 space-y-1">
+              {/* E2EE Session Divider */}
+              <div className="flex items-center justify-center my-2">
+                <div className="px-3 py-1 rounded-full bg-slate-900/80 border border-white/5 text-[11px] text-slate-400 flex items-center gap-1.5 shadow-sm">
+                  <Lock className="w-3 h-3 text-cyan-400" />
+                  <span>Messages in this conversation are end-to-end encrypted.</span>
+                </div>
+              </div>
+
               {messages.map((msg) => (
                 <MessageBubble
                   key={msg.id}
@@ -117,7 +157,7 @@ export const AppShell: React.FC = () => {
               conversationId={activeConversationId}
               onSendMessage={sendTextMessage}
               onSendImage={sendImageAttachment}
-              disabled={!isVerified}
+              disabled={!isVerified || isBlocked}
             />
 
             {/* 4-Layer Handshake Modal */}

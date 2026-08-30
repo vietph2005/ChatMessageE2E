@@ -117,4 +117,48 @@ class HandshakeServiceTest {
         assertThrows(DomainException.class, () ->
                 handshakeService.confirmSafetyCode("user_bob", "conv_123", "000000"));
     }
+
+    @Test
+    @DisplayName("Should successfully re-initiate handshake upon key rotation/mismatch")
+    void shouldReInitiateHandshakeSuccessfully() {
+        UserProfile initiator = UserProfile.builder().id("user_alice").email("alice@gmail.com").build();
+        Conversation conv = Conversation.builder()
+                .id("conv_123")
+                .participantAId("user_alice")
+                .participantBId("user_bob")
+                .status(Conversation.ConversationStatus.VERIFIED_ACTIVE)
+                .build();
+
+        HandshakeVerification handshake = HandshakeVerification.builder()
+                .conversationId("conv_123")
+                .initiatorId("user_alice")
+                .recipientId("user_bob")
+                .initiatorPublicKey("old_alice_pub_key")
+                .recipientPublicKey("bob_pub_key")
+                .layer1Status(HandshakeVerification.LayerStatus.VERIFIED)
+                .layer2Status(HandshakeVerification.LayerStatus.ACCEPTED)
+                .layer3Status(HandshakeVerification.LayerStatus.EXCHANGED)
+                .layer4Status(HandshakeVerification.LayerStatus.CONFIRMED)
+                .safetyCode("123456")
+                .version(1)
+                .build();
+
+        when(conversationRepository.findById("conv_123")).thenReturn(Optional.of(conv));
+        when(userRepository.findById("user_alice")).thenReturn(Optional.of(initiator));
+        when(handshakeRepository.findByConversationId("conv_123")).thenReturn(Optional.of(handshake));
+        when(handshakeRepository.save(any(HandshakeVerification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        HandshakeVerification result = handshakeService.reInitiateHandshake("user_alice", "conv_123", "new_alice_pub_key");
+
+        assertEquals("new_alice_pub_key", result.getInitiatorPublicKey());
+        assertEquals(HandshakeVerification.LayerStatus.VERIFIED, result.getLayer1Status());
+        assertEquals(HandshakeVerification.LayerStatus.PENDING, result.getLayer2Status());
+        assertEquals(HandshakeVerification.LayerStatus.PENDING, result.getLayer3Status());
+        assertEquals(HandshakeVerification.LayerStatus.PENDING, result.getLayer4Status());
+        assertNull(result.getSafetyCode());
+        assertEquals(2, result.getVersion());
+        assertEquals(Conversation.ConversationStatus.HANDSHAKE_IN_PROGRESS, conv.getStatus());
+
+        verify(notificationHandler).notifyKeyChanged(eq("user_bob"), eq("conv_123"), any(UserProfile.class));
+    }
 }

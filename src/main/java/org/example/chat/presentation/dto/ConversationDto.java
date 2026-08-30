@@ -81,22 +81,37 @@ public class ConversationDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class ReInitiateRequest {
+        @NotBlank(message = "Initiator public key is required")
+        private String initiatorPublicKey;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class HandshakeStateDto {
+        private String initiatorPublicKey;
+        private String recipientPublicKey;
         private String layer1Status;
         private String layer2Status;
         private String layer3Status;
         private String layer4Status;
         private String safetyCode;
         private String fullFingerprintHex;
+        private Integer version;
 
         public static HandshakeStateDto fromDomain(HandshakeVerification h) {
             return HandshakeStateDto.builder()
+                    .initiatorPublicKey(h.getInitiatorPublicKey())
+                    .recipientPublicKey(h.getRecipientPublicKey())
                     .layer1Status(h.getLayer1Status() != null ? h.getLayer1Status().name() : null)
                     .layer2Status(h.getLayer2Status() != null ? h.getLayer2Status().name() : null)
                     .layer3Status(h.getLayer3Status() != null ? h.getLayer3Status().name() : null)
                     .layer4Status(h.getLayer4Status() != null ? h.getLayer4Status().name() : null)
                     .safetyCode(h.getSafetyCode())
                     .fullFingerprintHex(h.getFullFingerprintHex())
+                    .version(h.getVersion())
                     .build();
         }
     }

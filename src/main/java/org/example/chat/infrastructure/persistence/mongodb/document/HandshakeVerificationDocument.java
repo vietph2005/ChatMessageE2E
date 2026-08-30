@@ -34,6 +34,7 @@ public class HandshakeVerificationDocument {
 
     private String safetyCode;
     private String fullFingerprintHex;
+    private Integer version;
 
     private Instant layer1VerifiedAt;
     private Instant layer2AcceptedAt;

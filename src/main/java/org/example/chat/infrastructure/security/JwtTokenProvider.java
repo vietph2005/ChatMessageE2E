@@ -21,12 +21,12 @@ public class JwtTokenProvider {
     private final SecretKey signingKey;
     private final long expirationMs;
 
-    public JwtTokenProvider(
-            @Value("${jwt.secret:c3VwZXJfc2VjdXJlX2tleV9mb3JfZGV2X3Rlc3Rpbmdfb25seV8yNTZiaXRzX2xvbmdfc3RyaW5nIQ==}") String secret,
-            @Value("${jwt.expiration-ms:86400000}") long expirationMs) {
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.expirationMs = expirationMs;
-    }
+        public JwtTokenProvider(
+                @Value("${jwt.secret:c3VwZXJfc2VjdXJlX2tleV9mb3JfZGV2X3Rlc3Rpbmdfb25seV8yNTZiaXRzX2xvbmdfc3RyaW5nIQ==}") String secret,
+                @Value("${jwt.expiration-ms:86400000}") long expirationMs) {
+            this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+            this.expirationMs = expirationMs;
+        }
 
     public String generateToken(String userId, String email, String displayName) {
         Date now = new Date();
