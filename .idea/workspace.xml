@@ -4,28 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c904694-190c-4a02-a6f6-746ed077b33c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/chat/ChatHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chat/ChatHeader.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/AppShell.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/AppShell.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/hooks/useChat.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/services/apiClient.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/services/apiClient.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/application/service/HandshakeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/application/service/HandshakeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/application/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/application/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/domain/model/HandshakeVerification.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/domain/model/HandshakeVerification.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/domain/model/UserProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/domain/model/UserProfile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/persistence/mongodb/document/HandshakeVerificationDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/persistence/mongodb/document/HandshakeVerificationDocument.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/persistence/mongodb/document/UserDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/persistence/mongodb/document/UserDocument.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/persistence/mongodb/repository/HandshakeRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/persistence/mongodb/repository/HandshakeRepositoryImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/persistence/mongodb/repository/UserRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/persistence/mongodb/repository/UserRepositoryImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/security/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/security/JwtTokenProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/presentation/controller/BlockController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/presentation/controller/BlockController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/presentation/controller/ConversationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/presentation/controller/ConversationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/presentation/dto/ConversationDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/presentation/dto/ConversationDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/presentation/websocket/HandshakeNotificationHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/presentation/websocket/HandshakeNotificationHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/org/example/chat/integration/ContactBlockIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/example/chat/integration/ContactBlockIntegrationTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/org/example/chat/unit/HandshakeServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/example/chat/unit/HandshakeServiceTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="0c904694-190c-4a02-a6f6-746ed077b33c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -102,7 +81,7 @@
       <updated>1787927052438</updated>
       <workItem from="1787927053892" duration="3510000" />
       <workItem from="1788014377600" duration="2487000" />
-      <workItem from="1788076149122" duration="4596000" />
+      <workItem from="1788076149122" duration="4865000" />
     </task>
     <servers />
   </component>
