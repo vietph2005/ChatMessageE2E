@@ -2,9 +2,10 @@
 RAG Vector Database Pipeline — ChatMessageE2E
 ==============================================
 Bước 4: Nạp toàn bộ embeddings vào ChromaDB (local, persistent)
-và xây dựng hàm Retrieval với chiến lược 2 lớp:
-  - Lớp 1: Metadata filter theo category
-  - Lớp 2: Vector similarity Top-K trong nhóm đã lọc
+và xây dựng hàm Retrieval thuần ngữ nghĩa (Pure Semantic Search):
+  - Tìm kiếm tương đồng vector Cosine trên toàn bộ cơ sở dữ liệu
+  - Áp dụng ngưỡng similarity cutoff (>= 0.55) để loại kết quả không liên quan
+  - Giải quyết triệt để bài toán câu hỏi đa chủ đề / không khớp từ khóa
 
 Input  : rag_data/embeddings/embeddings.json
 Output : rag_data/vector_db/chroma_db/  (Persistent ChromaDB folder)
@@ -29,8 +30,9 @@ EMBEDDINGS_PATH = BASE_DIR / "embeddings" / "embeddings.json"
 CHROMA_DB_DIR   = BASE_DIR / "vector_db" / "chroma_db"
 
 # ── Tham số ChromaDB ──────────────────────────────────────────────────────────
-COLLECTION_NAME = "chatmessage_faq"
-TOP_K_DEFAULT   = 3      # Số kết quả trả về mặc định
+COLLECTION_NAME   = "chatmessage_faq"
+TOP_K_DEFAULT     = 3      # Số kết quả trả về mặc định
+SIMILARITY_CUTOFF = 0.55   # Ngưỡng tối thiểu: kết quả similarity thấp hơn sẽ bị loại
 
 # ── Tham số Embedding (dùng lại khi query) ───────────────────────────────────
 EMBEDDING_MODEL = "models/text-embedding-004"
@@ -139,43 +141,48 @@ def ingest_embeddings(collection, embeddings: List[Dict[str, Any]]) -> None:
 
 
 # ════════════════════════════════════════════════════════════════
-#  PHẦN 2: RETRIEVAL — TÌM KIẾM 2 LỚP
+#  PHẦN 2: RETRIEVAL — PURE SEMANTIC SEARCH
 # ════════════════════════════════════════════════════════════════
 
 def search(
     collection,
     query_embedding: List[float],
-    category: Optional[str] = None,
     top_k: int = TOP_K_DEFAULT,
+    similarity_cutoff: float = SIMILARITY_CUTOFF,
 ) -> List[Dict[str, Any]]:
     """
-    Hàm Retrieval chính: Tìm kiếm 2 lớp.
+    Hàm Retrieval thuần ngữ nghĩa (Pure Semantic Search).
 
-    Lớp 1: Nếu category được cung cấp → Lọc theo metadata.category trước.
-    Lớp 2: So sánh vector similarity trong tập đã lọc → Lấy top_k gần nhất.
+    Không dùng Metadata Filter cứng theo category nữa.
+    Thay vào đó:
+      - Lấy top_k * 3 kết quả rộng rãi từ toàn bộ DB
+      - Lọc bỏ những kết quả có similarity < similarity_cutoff
+      - Trả về tối đa top_k kết quả có nghĩa nhất
+
+    Ưu điểm:
+      - Xử lý đúng câu hỏi đa chủ đề (không bị First-match lệch nhóm)
+      - Không bỏ sót FAQ liên quan ở nhóm khác
+      - Không cần bảo trì bảng từ khóa thủ công
 
     Args:
-        query_embedding: Vector 768 chiều của câu hỏi người dùng
-        category: Tên danh mục để filter (None = tìm toàn bộ DB)
-        top_k: Số kết quả trả về
+        query_embedding   : Vector 768 chiều của câu hỏi người dùng
+        top_k             : Số kết quả tối đa trả về
+        similarity_cutoff : Ngưỡng similarity tối thiểu để giữ kết quả
 
     Returns:
-        Danh sách kết quả, mỗi item gồm: page_content, metadata, distance
+        Danh sách kết quả đã lọc, mỗi item gồm: id, page_content, metadata,
+        distance, similarity
     """
-    # Xây dựng điều kiện filter
-    where_clause = None
-    if category:
-        where_clause = {"category": {"$eq": category}}
+    # Lấy rộng hơn top_k để sau khi lọc theo ngưỡng vẫn còn đủ kết quả
+    fetch_k = min(top_k * 3, collection.count())
 
-    # Gọi ChromaDB query
+    # Tìm kiếm trên TOÀN BỘ DB — không có where_clause
     raw = collection.query(
         query_embeddings=[query_embedding],
-        n_results=top_k,
-        where=where_clause,
+        n_results=fetch_k,
         include=["documents", "metadatas", "distances"],
     )
 
-    # Đóng gói kết quả theo format dễ dùng
     results = []
     if raw["ids"] and raw["ids"][0]:
         for i in range(len(raw["ids"][0])):
@@ -183,6 +190,10 @@ def search(
             # Cosine Similarity = 1 - distance
             distance   = raw["distances"][0][i]
             similarity = 1.0 - distance
+
+            # Lọc: bỏ qua những kết quả ngữ nghĩa quá yếu
+            if similarity < similarity_cutoff:
+                continue
 
             results.append({
                 "id":           raw["ids"][0][i],
@@ -192,73 +203,11 @@ def search(
                 "similarity":   round(similarity, 6),
             })
 
+            # Dừng khi đã đủ top_k kết quả chất lượng
+            if len(results) >= top_k:
+                break
+
     return results
-
-
-def detect_category(query: str) -> Optional[str]:
-    """
-    Phát hiện sơ bộ category của câu hỏi người dùng dựa trên từ khóa.
-    Giúp kích hoạt Metadata Filter ở Lớp 1 của Retrieval.
-    Trả về None nếu không xác định được → tìm toàn bộ DB.
-    """
-    query_lower = query.lower()
-
-    keyword_map = {
-        "Đăng nhập": [
-            "đăng nhập", "login", "sign in", "google account",
-            "tài khoản", "xác thực", "phiên", "session"
-        ],
-        "Tìm kiếm": [
-            "tìm kiếm", "tìm", "search", "gmail", "địa chỉ",
-            "khám phá", "find"
-        ],
-        "Kết nối & Handshake": [
-            "kết nối", "handshake", "lời mời", "chấp nhận",
-            "xác minh", "safety code", "mã an toàn", "4 lớp",
-            "bắt đầu chat", "verify"
-        ],
-        "Nhắn tin": [
-            "nhắn tin", "gửi tin", "tin nhắn", "message",
-            "chat", "trả lời", "đọc", "gửi"
-        ],
-        "Gửi hình ảnh": [
-            "hình ảnh", "ảnh", "image", "photo", "file", "jpg",
-            "png", "gif", "đính kèm", "attachment"
-        ],
-        "Thu hồi & Xóa tin nhắn": [
-            "thu hồi", "xóa", "unsend", "delete", "recall",
-            "xóa tin nhắn", "thu hồi tin nhắn"
-        ],
-        "Bảo mật & Mã hóa": [
-            "bảo mật", "mã hóa", "encrypt", "e2ee", "private key",
-            "khóa", "zero knowledge", "an toàn", "security"
-        ],
-        "Chặn & Bỏ chặn": [
-            "chặn", "block", "bỏ chặn", "unblock", "khóa liên hệ"
-        ],
-        "Xác minh lại (Re-handshake)": [
-            "xác minh lại", "re-handshake", "re-verify",
-            "khóa thay đổi", "key changed", "thiết bị mới"
-        ],
-        "Trạng thái & Chỉ báo": [
-            "đang gõ", "typing", "online", "offline",
-            "trạng thái", "chỉ báo", "indicator"
-        ],
-        "Giao diện": [
-            "giao diện", "ui", "màn hình", "điện thoại", "mobile",
-            "responsive", "dark mode", "sidebar"
-        ],
-        "Lỗi thường gặp": [
-            "lỗi", "error", "không giải mã", "mất kết nối",
-            "hết hạn", "expired", "decrypt"
-        ],
-    }
-
-    for category, keywords in keyword_map.items():
-        if any(kw in query_lower for kw in keywords):
-            return category
-
-    return None  # Không xác định được → tìm toàn bộ DB
 
 
 # ════════════════════════════════════════════════════════════════
@@ -291,23 +240,17 @@ def embed_query(query: str) -> List[float]:
 def test_e2e_query(collection, test_queries: List[str]) -> None:
     """
     Giả lập toàn bộ luồng thực tế của chatbot:
-    Câu hỏi người dùng → Embed → Detect Category → Search → In kết quả
+    Câu hỏi người dùng → Embed → Pure Semantic Search → Lọc ngưỡng → In kết quả
     """
     print("\n" + "═" * 60)
-    print("  🧪 TEST E2E — Giả lập Câu Hỏi Người Dùng")
+    print("  🧪 TEST E2E — Pure Semantic Search (Không metadata filter)")
     print("═" * 60)
 
     for i, query in enumerate(test_queries, 1):
         print(f"\n[Query {i}] 👤 \"{query}\"")
+        print(f"  🔍 Tìm kiếm thuần ngữ nghĩa trên toàn bộ DB (ngưỡng similarity ≥ {SIMILARITY_CUTOFF})")
 
-        # Bước 1: Phát hiện category
-        detected_cat = detect_category(query)
-        if detected_cat:
-            print(f"  📂 Detected category: \"{detected_cat}\" → Kích hoạt metadata filter")
-        else:
-            print(f"  📂 Không xác định category → Tìm toàn bộ DB")
-
-        # Bước 2: Embed câu hỏi (RETRIEVAL_QUERY)
+        # Bước 1: Embed câu hỏi (RETRIEVAL_QUERY)
         try:
             query_vec = embed_query(query)
         except Exception as e:
@@ -315,12 +258,12 @@ def test_e2e_query(collection, test_queries: List[str]) -> None:
             print(f"  → Bỏ qua test query này\n")
             continue
 
-        # Bước 3: Search với 2 lớp
-        results = search(collection, query_vec, category=detected_cat, top_k=3)
+        # Bước 2: Pure semantic search — không filter theo category
+        results = search(collection, query_vec, top_k=3)
 
-        # Bước 4: In kết quả
+        # Bước 3: In kết quả
         if not results:
-            print(f"  ❌ Không tìm thấy kết quả phù hợp")
+            print(f"  ❌ Không tìm thấy kết quả phù hợp (similarity < {SIMILARITY_CUTOFF})")
             continue
 
         print(f"  🎯 Top {len(results)} kết quả:")

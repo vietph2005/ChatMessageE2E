@@ -57,6 +57,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(org.example.chat.infrastructure.rag.RagApiException.class)
+    public ResponseEntity<ApiError> handleRagApiException(org.example.chat.infrastructure.rag.RagApiException ex, HttpServletRequest request) {
+        String traceId = resolveTraceId(request);
+        log.warn("[RagApiException] TraceId: {}, Message: {}", traceId, ex.getMessage());
+
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.SERVICE_UNAVAILABLE.value())
+                .errorCode("RAG_UNAVAILABLE")
+                .message(ex.getMessage())
+                .traceId(traceId)
+                .timestamp(Instant.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception ex, HttpServletRequest request) {
         String traceId = resolveTraceId(request);
