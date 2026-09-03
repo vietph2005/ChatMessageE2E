@@ -117,4 +117,139 @@ class HandshakeContractTest {
                 .andExpect(jsonPath("$[0].peerUser.email").value("bob@gmail.com"))
                 .andExpect(jsonPath("$[0].status").value("VERIFIED_ACTIVE"));
     }
+
+    @Test
+    @DisplayName("Contract: POST /api/v1/conversations/{id}/handshake/accept accepts handshake")
+    void testAcceptHandshakeContract() throws Exception {
+        String token = jwtTokenProvider.generateToken("user_bob", "bob@gmail.com", "Bob");
+
+        Conversation conv = Conversation.builder()
+                .id("conv_999")
+                .participantAId("user_alice")
+                .participantBId("user_bob")
+                .status(Conversation.ConversationStatus.PENDING_ACCEPTANCE)
+                .build();
+
+        HandshakeVerification handshake = HandshakeVerification.builder()
+                .conversationId("conv_999")
+                .layer1Status(HandshakeVerification.LayerStatus.VERIFIED)
+                .layer2Status(HandshakeVerification.LayerStatus.ACCEPTED)
+                .layer3Status(HandshakeVerification.LayerStatus.EXCHANGED)
+                .safetyCode("842910")
+                .build();
+
+        when(handshakeService.acceptHandshake(eq("user_bob"), eq("conv_999"), eq("bob_pub_key"))).thenReturn(handshake);
+        when(conversationRepository.findById("conv_999")).thenReturn(Optional.of(conv));
+
+        ConversationDto.AcceptRequest request = new ConversationDto.AcceptRequest("bob_pub_key");
+
+        mockMvc.perform(post("/api/v1/conversations/conv_999/handshake/accept")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("conv_999"))
+                .andExpect(jsonPath("$.handshake.layer2Status").value("ACCEPTED"))
+                .andExpect(jsonPath("$.handshake.safetyCode").value("842910"));
+    }
+
+    @Test
+    @DisplayName("Contract: POST /api/v1/conversations/{id}/handshake/confirm-safety-code confirms layer 4")
+    void testConfirmSafetyCodeContract() throws Exception {
+        String token = jwtTokenProvider.generateToken("user_alice", "alice@gmail.com", "Alice");
+
+        Conversation conv = Conversation.builder()
+                .id("conv_999")
+                .participantAId("user_alice")
+                .participantBId("user_bob")
+                .status(Conversation.ConversationStatus.VERIFIED_ACTIVE)
+                .build();
+
+        HandshakeVerification handshake = HandshakeVerification.builder()
+                .conversationId("conv_999")
+                .layer4Status(HandshakeVerification.LayerStatus.CONFIRMED)
+                .safetyCode("842910")
+                .build();
+
+        when(handshakeService.confirmSafetyCode(eq("user_alice"), eq("conv_999"), eq("842910"))).thenReturn(conv);
+        when(handshakeService.getHandshake("conv_999")).thenReturn(handshake);
+
+        ConversationDto.ConfirmSafetyCodeRequest request = new ConversationDto.ConfirmSafetyCodeRequest("842910");
+
+        mockMvc.perform(post("/api/v1/conversations/conv_999/handshake/confirm-safety-code")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("conv_999"))
+                .andExpect(jsonPath("$.status").value("VERIFIED_ACTIVE"))
+                .andExpect(jsonPath("$.handshake.layer4Status").value("CONFIRMED"));
+    }
+
+    @Test
+    @DisplayName("Contract: POST /api/v1/conversations/{id}/handshake/re-initiate re-initiates handshake")
+    void testReInitiateHandshakeContract() throws Exception {
+        String token = jwtTokenProvider.generateToken("user_alice", "alice@gmail.com", "Alice");
+
+        Conversation conv = Conversation.builder()
+                .id("conv_999")
+                .participantAId("user_alice")
+                .participantBId("user_bob")
+                .status(Conversation.ConversationStatus.HANDSHAKE_IN_PROGRESS)
+                .build();
+
+        HandshakeVerification handshake = HandshakeVerification.builder()
+                .conversationId("conv_999")
+                .layer1Status(HandshakeVerification.LayerStatus.VERIFIED)
+                .layer2Status(HandshakeVerification.LayerStatus.ACCEPTED)
+                .layer3Status(HandshakeVerification.LayerStatus.PENDING)
+                .build();
+
+        when(handshakeService.reInitiateHandshake(eq("user_alice"), eq("conv_999"), eq("new_alice_key"))).thenReturn(handshake);
+        when(conversationRepository.findById("conv_999")).thenReturn(Optional.of(conv));
+
+        ConversationDto.ReInitiateRequest request = new ConversationDto.ReInitiateRequest("new_alice_key");
+
+        mockMvc.perform(post("/api/v1/conversations/conv_999/handshake/re-initiate")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("conv_999"))
+                .andExpect(jsonPath("$.status").value("HANDSHAKE_IN_PROGRESS"))
+                .andExpect(jsonPath("$.handshake.layer3Status").value("PENDING"));
+    }
+
+    @Test
+    @DisplayName("Contract: GET /api/v1/conversations/{id} returns conversation details and handshake")
+    void testGetConversationDetailContract() throws Exception {
+        String token = jwtTokenProvider.generateToken("user_alice", "alice@gmail.com", "Alice");
+
+        Conversation conv = Conversation.builder()
+                .id("conv_999")
+                .participantAId("user_alice")
+                .participantBId("user_bob")
+                .status(Conversation.ConversationStatus.VERIFIED_ACTIVE)
+                .build();
+
+        HandshakeVerification handshake = HandshakeVerification.builder()
+                .conversationId("conv_999")
+                .layer1Status(HandshakeVerification.LayerStatus.VERIFIED)
+                .layer2Status(HandshakeVerification.LayerStatus.ACCEPTED)
+                .layer3Status(HandshakeVerification.LayerStatus.EXCHANGED)
+                .layer4Status(HandshakeVerification.LayerStatus.CONFIRMED)
+                .safetyCode("842910")
+                .build();
+
+        when(conversationRepository.findById("conv_999")).thenReturn(Optional.of(conv));
+        when(handshakeService.getHandshake("conv_999")).thenReturn(handshake);
+
+        mockMvc.perform(get("/api/v1/conversations/conv_999")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("conv_999"))
+                .andExpect(jsonPath("$.status").value("VERIFIED_ACTIVE"))
+                .andExpect(jsonPath("$.handshake.safetyCode").value("842910"))
+                .andExpect(jsonPath("$.handshake.layer4Status").value("CONFIRMED"));
+    }
 }
