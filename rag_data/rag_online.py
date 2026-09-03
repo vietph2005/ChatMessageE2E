@@ -20,9 +20,16 @@ Cách dùng:
 """
 
 import os
+import sys
 import math
 from pathlib import Path
 from typing import List, Dict, Any, Optional
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 
 # ── Load .env ─────────────────────────────────────────────────────────────────
 try:
@@ -32,9 +39,11 @@ except ImportError:
     pass
 
 # ── Cấu hình Model ───────────────────────────────────────────────────────────
-EMBEDDING_MODEL    = "models/text-embedding-004"
-GENERATION_MODEL   = "gemini-2.0-flash"   # Miễn phí, nhanh, cùng API key
-VECTOR_DIM         = 768
+EMBEDDING_MODEL    = "models/gemini-embedding-001"
+GENERATION_MODEL   = "gemini-3.5-flash-lite"   # Mô hình thế hệ mới nhất, cực nhanh và miễn phí
+
+VECTOR_DIM         = 3072
+
 
 # ── Tham số Retrieval (đồng bộ với vector_db.py) ─────────────────────────────
 TOP_K              = 3      # Số đoạn FAQ đưa vào ngữ cảnh
@@ -291,7 +300,7 @@ def answer(
 
 
 # ════════════════════════════════════════════════════════════════
-#  DEMO: Chạy thử các câu hỏi mẫu
+#  CLI EXECUTION
 # ════════════════════════════════════════════════════════════════
 
 def main():
@@ -302,33 +311,17 @@ def main():
     print(f"  🎯  Similarity Cutoff: {SIMILARITY_CUTOFF}")
     print("=" * 65)
 
-    # Kết nối ChromaDB một lần, tái sử dụng cho tất cả câu hỏi
     collection = get_collection()
-
-    # Các câu hỏi thử nghiệm — đơn nhóm, đa nhóm, và lạc đề
-    test_questions = [
-        "Làm sao để tìm người dùng khác để bắt đầu chat?",
-        "Tin nhắn bị lỗi không gửi được, tôi phải làm sao?",
-        "Safety code là gì và tại sao tôi phải xác nhận nó?",
-        "Nếu tôi đăng nhập máy mới thì tin nhắn cũ có còn không và bảo mật ra sao?",
-        "Thời tiết hôm nay thế nào?",   # Câu lạc đề — kỳ vọng từ chối khéo
-    ]
-
-    for i, q in enumerate(test_questions, 1):
-        print(f"\n{'─' * 65}")
-        print(f"[Câu hỏi {i}] 👤 {q}")
-        print("─" * 65)
-
-        result = answer(q, collection=collection, verbose=True)
-
-        print(f"\n🤖 Trả lời:\n{result['answer']}")
-
-        if result["sources"]:
-            print(f"\n📚 Nguồn tham khảo ({len(result['sources'])} đoạn):")
-            for src in result["sources"]:
-                print(f"   • [{src['category']}] {src['question'][:60]}... ({src['similarity']:.0%})")
-        else:
-            print("📚 Không có nguồn tham khảo (câu hỏi ngoài phạm vi)")
+    query = " ".join(sys.argv[1:]).strip() if len(sys.argv) > 1 else "ChatMessage là gì?"
+    print(f"\n[QUERY] 👤 {query}")
+    result = answer(query, collection=collection, verbose=True)
+    print(f"\n🤖 Trả lời:\n{result['answer']}")
+    if result["sources"]:
+        print(f"\n📚 Nguồn tham khảo ({len(result['sources'])} đoạn):")
+        for src in result["sources"]:
+            print(f"   • [{src['category']}] {src['question'][:60]}... ({src['similarity']:.0%})")
+    else:
+        print("📚 Không có nguồn tham khảo (câu hỏi ngoài phạm vi)")
 
     print(f"\n{'=' * 65}")
     print("✅ Online Pipeline hoàn tất!")

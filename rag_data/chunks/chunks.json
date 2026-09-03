@@ -1,0 +1,631 @@
+[
+  {
+    "page_content": "Câu hỏi: Làm thế nào để đăng nhập vào ứng dụng?\n\nTrả lời: Bạn đăng nhập bằng tài khoản Google (Gmail). Trên màn hình đầu tiên, nhấn nút **\"Đăng nhập bằng Google\"** (Sign in with Google), sau đó hoàn tất luồng xác thực Google OAuth2. Sau khi đăng nhập thành công, hệ thống sẽ tự động tải thông tin hồ sơ của bạn (tên, email, ảnh đại diện) và khởi tạo khóa mã hóa cục bộ trên trình duyệt.",
+    "metadata": {
+      "id": "auth-001",
+      "category": "Đăng nhập",
+      "question": "Làm thế nào để đăng nhập vào ứng dụng?",
+      "source": "spec-001, README",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 386,
+      "chunk_strategy": "single",
+      "doc_index": 0
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Ứng dụng hỗ trợ đăng nhập bằng tài khoản gì?\n\nTrả lời: Ứng dụng **chỉ hỗ trợ đăng nhập bằng tài khoản Google (Gmail)**. Bạn phải có một địa chỉ Gmail hợp lệ để sử dụng. Không hỗ trợ đăng nhập bằng email thông thường, Facebook, hay các tài khoản khác.",
+    "metadata": {
+      "id": "auth-002",
+      "category": "Đăng nhập",
+      "question": "Ứng dụng hỗ trợ đăng nhập bằng tài khoản gì?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 259,
+      "chunk_strategy": "single",
+      "doc_index": 1
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tôi đăng nhập trên máy tính mới thì tin nhắn cũ có mất không?\n\nTrả lời: Có, **tin nhắn cũ sẽ không hiển thị** trên thiết bị/trình duyệt mới. Vì lý do bảo mật, khóa riêng tư (private key) và lịch sử tin nhắn được lưu **cục bộ trong trình duyệt** (IndexedDB) và không bao giờ được tải lên máy chủ. Khi đăng nhập trên trình duyệt mới, hệ thống sẽ tự tạo cặp khóa mới và thông báo cho các liên lạc của bạn rằng **mã an toàn (Safety Code) đã thay đổi**. Từ đó, bạn chỉ thấy được những tin nhắn mới sau khi thực hiện xác minh lại (re-handshake).",
+    "metadata": {
+      "id": "auth-003",
+      "category": "Đăng nhập",
+      "question": "Tôi đăng nhập trên máy tính mới thì tin nhắn cũ có mất không?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 548,
+      "chunk_strategy": "single",
+      "doc_index": 2
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tôi xóa cache trình duyệt thì sao?\n\nTrả lời: Nếu bạn xóa dữ liệu trình duyệt (cache, IndexedDB), **khóa mã hóa cục bộ sẽ bị mất**. Khi đăng nhập lại, hệ thống sẽ tự động tạo cặp khóa mới và yêu cầu bạn thực hiện lại quy trình xác minh 4 lớp (re-handshake) với từng liên lạc. Đây là thiết kế bảo mật để bảo vệ quyền riêng tư — private key không bao giờ rời khỏi thiết bị của bạn.",
+    "metadata": {
+      "id": "auth-004",
+      "category": "Đăng nhập",
+      "question": "Tôi xóa cache trình duyệt thì sao?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 387,
+      "chunk_strategy": "single",
+      "doc_index": 3
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để tìm kiếm người dùng khác?\n\nTrả lời: Nhập **chính xác địa chỉ Gmail** của người bạn muốn kết nối vào ô tìm kiếm trên thanh bên trái (sidebar). Ứng dụng **chỉ hỗ trợ tìm kiếm chính xác theo Gmail** — bạn phải nhập đầy đủ địa chỉ email, ví dụ: `bob@gmail.com`. Hệ thống không gợi ý danh sách người dùng công khai để bảo vệ quyền riêng tư.",
+    "metadata": {
+      "id": "search-001",
+      "category": "Tìm kiếm",
+      "question": "Làm thế nào để tìm kiếm người dùng khác?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 359,
+      "chunk_strategy": "single",
+      "doc_index": 4
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tôi tìm kiếm theo tên được không?\n\nTrả lời: **Không.** Ứng dụng chỉ cho phép tìm kiếm bằng **địa chỉ Gmail chính xác**. Bạn không thể tìm theo tên hiển thị hay gợi ý bằng một phần tên. Điều này nhằm bảo vệ quyền riêng tư — chỉ người biết chính xác Gmail của bạn mới có thể kết nối với bạn.",
+    "metadata": {
+      "id": "search-002",
+      "category": "Tìm kiếm",
+      "question": "Tôi tìm kiếm theo tên được không?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 298,
+      "chunk_strategy": "single",
+      "doc_index": 5
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để bắt đầu một cuộc trò chuyện với người khác?\n\nTrả lời: Để bắt đầu cuộc trò chuyện, bạn cần trải qua **quy trình xác minh 4 lớp bắt buộc**:\n\n1. **Tìm kiếm**: Nhập chính xác Gmail của người đó vào ô tìm kiếm và nhấn **\"Bắt đầu chat bảo mật\"**.\n2. **Lớp 2 – Chờ chấp nhận**: Người kia sẽ nhận được lời mời kết nối. Họ cần đăng nhập và nhấn **\"Chấp nhận lời mời\"**.\n3. **Lớp 3 – Trao đổi khóa**: Hệ thống tự động thực hiện trao đổi khóa mã hóa giữa hai bên.\n4. **Lớp 4 – Xác nhận mã an toàn**: Cả hai bên nhìn thấy cùng một **mã 6 chữ số** (ví dụ: `842 910`). Nhấn **\"Xác nhận khớp mã\"** để hoàn tất.\n\nSau khi hoàn thành 4 lớp, kênh chat được mở khóa và bạn có thể bắt đầu nhắn tin.",
+    "metadata": {
+      "id": "connect-001",
+      "category": "Kết nối & Handshake",
+      "question": "Làm thế nào để bắt đầu một cuộc trò chuyện với người khác?",
+      "source": "spec-001, README",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 701,
+      "chunk_strategy": "single_protected",
+      "doc_index": 6
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Người tôi muốn chat đang offline thì sao?\n\nTrả lời: **Không sao cả.** Quy trình kết nối 4 lớp hoạt động **không đồng bộ (asynchronous)** — bạn có thể gửi lời mời kể cả khi người kia đang offline. Lời mời sẽ được lưu trên máy chủ. Khi người đó đăng nhập lại, họ sẽ thấy thông báo **\"[Tên bạn] muốn kết nối\"** và có thể chấp nhận hoặc từ chối.",
+    "metadata": {
+      "id": "connect-002",
+      "category": "Kết nối & Handshake",
+      "question": "Người tôi muốn chat đang offline thì sao?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 350,
+      "chunk_strategy": "single",
+      "doc_index": 7
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Mã an toàn 6 chữ số là gì?\n\nTrả lời: **Mã an toàn (Safety Code)** là một chuỗi 6 chữ số (ví dụ: `842 910`) được tính toán tự động từ khóa công khai của cả hai bên. Đây là xác minh **Lớp 4** trong quy trình bảo mật. Mục đích là đảm bảo không có ai đứng giữa đánh cắp kết nối của bạn (tấn công Man-in-the-Middle). Nếu hai bên thấy cùng một mã, hãy nhấn **\"Xác nhận khớp mã\"** để hoàn tất thiết lập kênh bảo mật.",
+    "metadata": {
+      "id": "connect-003",
+      "category": "Kết nối & Handshake",
+      "question": "Mã an toàn 6 chữ số là gì?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 418,
+      "chunk_strategy": "single",
+      "doc_index": 8
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tại sao tôi không thể gửi tin nhắn dù đã kết nối?\n\nTrả lời: Bạn **chỉ có thể gửi tin nhắn sau khi hoàn thành đủ 4 lớp xác minh**. Hệ thống sẽ khóa ô nhập tin nhắn cho đến khi:\n- ✅ Lớp 1: Cả hai đều có tài khoản Google hợp lệ\n- ✅ Lớp 2: Người nhận đã chấp nhận lời mời\n- ✅ Lớp 3: Trao đổi khóa mã hóa hoàn tất\n- ✅ Lớp 4: Cả hai đã xác nhận mã an toàn\n\nNếu bất kỳ lớp nào chưa hoàn thành, hãy kiểm tra trạng thái cuộc trò chuyện và hoàn tất bước còn lại.",
+    "metadata": {
+      "id": "connect-004",
+      "category": "Kết nối & Handshake",
+      "question": "Tại sao tôi không thể gửi tin nhắn dù đã kết nối?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 461,
+      "chunk_strategy": "single",
+      "doc_index": 9
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Người kia từ chối lời mời kết nối của tôi thì sao?\n\nTrả lời: Nếu người kia **từ chối lời mời** ở Lớp 2, lời mời kết nối sẽ bị hủy và không có kênh chat nào được tạo. Bạn sẽ không thể gửi tin nhắn cho họ. Bạn có thể thử gửi lại lời mời sau.",
+    "metadata": {
+      "id": "connect-005",
+      "category": "Kết nối & Handshake",
+      "question": "Người kia từ chối lời mời kết nối của tôi thì sao?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 248,
+      "chunk_strategy": "single",
+      "doc_index": 10
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để gửi tin nhắn?\n\nTrả lời: Sau khi kênh chat được xác minh (trạng thái **VERIFIED_ACTIVE**), bạn có thể:\n1. Nhập nội dung tin nhắn vào ô nhập liệu ở cuối màn hình chat.\n2. Nhấn **Enter** hoặc nút **Gửi** để gửi tin nhắn.\n\nTin nhắn sẽ được mã hóa ngay trên thiết bị của bạn trước khi truyền đi. Người nhận sẽ nhận được trong vòng dưới 500ms nếu họ đang online.",
+    "metadata": {
+      "id": "msg-001",
+      "category": "Nhắn tin",
+      "question": "Làm thế nào để gửi tin nhắn?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 380,
+      "chunk_strategy": "single",
+      "doc_index": 11
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Ứng dụng hỗ trợ những loại tin nhắn nào?\n\nTrả lời: Ứng dụng hiện hỗ trợ:\n- 💬 **Tin nhắn văn bản** (text)\n- 😊 **Biểu tượng cảm xúc** (emoji)\n- 🖼️ **Hình ảnh mã hóa** (JPG, PNG, GIF — dung lượng tối đa **5MB**)\n\nTất cả nội dung đều được mã hóa đầu cuối (E2EE) trước khi gửi. Chưa hỗ trợ voice/video call hay file đính kèm khác trong phiên bản hiện tại.",
+    "metadata": {
+      "id": "msg-002",
+      "category": "Nhắn tin",
+      "question": "Ứng dụng hỗ trợ những loại tin nhắn nào?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 359,
+      "chunk_strategy": "single",
+      "doc_index": 12
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tôi gửi tin nhắn khi người kia offline thì có nhận được không?\n\nTrả lời: **Có.** Nếu người nhận đang offline, tin nhắn đã mã hóa sẽ được **lưu trữ trên máy chủ** và tự động gửi đến ngay khi họ kết nối lại. Trạng thái tin nhắn sẽ cập nhật từ **Đã gửi → Đã nhận → Đã đọc** theo thời gian thực.",
+    "metadata": {
+      "id": "msg-003",
+      "category": "Nhắn tin",
+      "question": "Tôi gửi tin nhắn khi người kia offline thì có nhận được không?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 300,
+      "chunk_strategy": "single",
+      "doc_index": 13
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Các trạng thái tin nhắn có nghĩa gì?\n\nTrả lời: Mỗi tin nhắn sẽ hiển thị một trong các trạng thái sau:\n- **Đang gửi** – Tin nhắn đang được mã hóa và truyền đi.\n- **Đã gửi** ✓ – Máy chủ đã nhận được tin nhắn.\n- **Đã nhận** ✓✓ – Thiết bị của người nhận đã tải về tin nhắn.\n- **Đã đọc** ✓✓ (xanh) – Người nhận đã mở và đọc tin nhắn.",
+    "metadata": {
+      "id": "msg-004",
+      "category": "Nhắn tin",
+      "question": "Các trạng thái tin nhắn có nghĩa gì?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 337,
+      "chunk_strategy": "single",
+      "doc_index": 14
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để gửi hình ảnh?\n\nTrả lời: 1. Trong khung chat đang mở, nhấn vào **biểu tượng hình ảnh** (📎 hoặc 🖼️) trên thanh nhập liệu.\n2. Chọn file ảnh từ thiết bị của bạn (định dạng JPG, PNG, hoặc GIF, dung lượng tối đa **5MB**).\n3. Nhấn **Gửi**.\n\nHình ảnh sẽ được mã hóa ngay trên thiết bị của bạn trước khi truyền. Người nhận sẽ thấy ảnh hiển thị trong bong bóng chat sau khi giải mã cục bộ.",
+    "metadata": {
+      "id": "img-001",
+      "category": "Gửi hình ảnh",
+      "question": "Làm thế nào để gửi hình ảnh?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 403,
+      "chunk_strategy": "single",
+      "doc_index": 15
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Ứng dụng hỗ trợ gửi video không?\n\nTrả lời: **Chưa hỗ trợ.** Phiên bản hiện tại chỉ hỗ trợ gửi hình ảnh (JPG, PNG, GIF tối đa 5MB). Tính năng gửi video và file lớn sẽ được xem xét trong các phiên bản tương lai.",
+    "metadata": {
+      "id": "img-002",
+      "category": "Gửi hình ảnh",
+      "question": "Ứng dụng hỗ trợ gửi video không?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 218,
+      "chunk_strategy": "single",
+      "doc_index": 16
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để thu hồi tin nhắn?\n\nTrả lời: Để **thu hồi tin nhắn cho cả hai phía** (Unsend for Everyone):\n1. Di chuột vào bong bóng tin nhắn bạn muốn thu hồi.\n2. Nhấn vào biểu tượng **ba chấm** (⋯) xuất hiện.\n3. Chọn **\"Thu hồi cho mọi người\"** (Unsend for Everyone).\n\nKết quả: Tin nhắn sẽ bị thay thế bằng dòng chữ *\"Tin nhắn này đã được thu hồi\"* trên **cả hai** màn hình.",
+    "metadata": {
+      "id": "unsend-001",
+      "category": "Thu hồi & Xóa tin nhắn",
+      "question": "Làm thế nào để thu hồi tin nhắn?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 383,
+      "chunk_strategy": "single",
+      "doc_index": 17
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Xóa tin nhắn ở phía tôi là gì?\n\nTrả lời: **Xóa ở phía tôi** (Delete for Me) chỉ xóa tin nhắn khỏi **màn hình của bạn**. Người nhận **vẫn thấy tin nhắn đó** như bình thường. Chức năng này không ảnh hưởng đến dữ liệu trên máy chủ hay màn hình của người kia.",
+    "metadata": {
+      "id": "unsend-002",
+      "category": "Thu hồi & Xóa tin nhắn",
+      "question": "Xóa tin nhắn ở phía tôi là gì?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 264,
+      "chunk_strategy": "single",
+      "doc_index": 18
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Sự khác nhau giữa Thu hồi cho mọi người và Xóa ở phía tôi?\n\nTrả lời: | Chức năng | Ảnh hưởng phía bạn | Ảnh hưởng phía người kia |\n|---|---|---|\n| **Thu hồi cho mọi người** | Tin nhắn biến mất | Tin nhắn bị thay bằng \"Đã thu hồi\" |\n| **Xóa ở phía tôi** | Tin nhắn biến mất | Người kia vẫn thấy bình thường |",
+    "metadata": {
+      "id": "unsend-003",
+      "category": "Thu hồi & Xóa tin nhắn",
+      "question": "Sự khác nhau giữa Thu hồi cho mọi người và Xóa ở phía tôi?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 316,
+      "chunk_strategy": "single",
+      "doc_index": 19
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tin nhắn của tôi có bị ai đọc được không?\n\nTrả lời: **Không.** Ứng dụng sử dụng mã hóa đầu cuối (End-to-End Encryption — E2EE) với thuật toán **AES-256-GCM**. Tin nhắn được mã hóa ngay trên thiết bị của bạn trước khi gửi đi. Máy chủ **chỉ lưu trữ dữ liệu đã mã hóa** — không ai, kể cả nhà phát triển ứng dụng, có thể đọc nội dung tin nhắn của bạn. Chỉ bạn và người nhận (với khóa giải mã cục bộ) mới đọc được.",
+    "metadata": {
+      "id": "security-001",
+      "category": "Bảo mật & Mã hóa",
+      "question": "Tin nhắn của tôi có bị ai đọc được không?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 418,
+      "chunk_strategy": "single",
+      "doc_index": 20
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Khóa riêng tư của tôi có được lưu trên server không?\n\nTrả lời: **Tuyệt đối không.** Khóa riêng tư (Private Key) được tạo ra và lưu trữ **hoàn toàn trên trình duyệt của bạn** (trong IndexedDB) và không bao giờ được gửi lên máy chủ. Đây là nguyên tắc **Zero-Knowledge** — máy chủ không có khả năng giải mã bất kỳ tin nhắn nào của bạn.",
+    "metadata": {
+      "id": "security-002",
+      "category": "Bảo mật & Mã hóa",
+      "question": "Khóa riêng tư của tôi có được lưu trên server không?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 341,
+      "chunk_strategy": "single",
+      "doc_index": 21
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để xem chi tiết bảo mật của một cuộc trò chuyện?\n\nTrả lời: 1. Mở cuộc trò chuyện bạn muốn kiểm tra.\n2. Nhấn vào nút **\"Chi tiết bảo mật\"** (Security Details) trên header của cuộc trò chuyện.\n3. Bảng thông tin sẽ hiển thị:\n   - Trạng thái của **4 lớp xác minh**\n   - **Mã an toàn 60 chữ số** đầy đủ (SHA-256 fingerprint)\n   - **Mã QR** để xác minh trực tiếp\n   - Lịch sử xác minh",
+    "metadata": {
+      "id": "security-003",
+      "category": "Bảo mật & Mã hóa",
+      "question": "Làm thế nào để xem chi tiết bảo mật của một cuộc trò chuyện?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 399,
+      "chunk_strategy": "single",
+      "doc_index": 22
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tôi nhận được thông báo \"Mã an toàn đã thay đổi\" là sao?\n\nTrả lời: Thông báo này xuất hiện khi **khóa mã hóa của người kia đã thay đổi** — thường do họ đăng nhập trên thiết bị mới hoặc xóa dữ liệu trình duyệt. Đây là cảnh báo bảo mật quan trọng. Bạn cần thực hiện **xác minh lại (re-handshake)** để đảm bảo vẫn đang chat với đúng người. Nhấn **\"Xác minh lại\"** và hoàn thành lại 4 lớp xác minh.",
+    "metadata": {
+      "id": "security-004",
+      "category": "Bảo mật & Mã hóa",
+      "question": "Tôi nhận được thông báo \"Mã an toàn đã thay đổi\" là sao?",
+      "source": "spec-001, spec-002",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 403,
+      "chunk_strategy": "single",
+      "doc_index": 23
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để biết người kia đang gõ tin nhắn?\n\nTrả lời: Khi người kia đang gõ, bạn sẽ thấy **chỉ báo gõ phím** (typing indicator) hiển thị trong cửa sổ chat — thường là dạng ba chấm nhảy (···). Chỉ báo này cập nhật theo thời gian thực và biến mất khi họ dừng gõ hoặc gửi tin nhắn.",
+    "metadata": {
+      "id": "typing-001",
+      "category": "Trạng thái & Chỉ báo",
+      "question": "Làm thế nào để biết người kia đang gõ tin nhắn?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 291,
+      "chunk_strategy": "single",
+      "doc_index": 24
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để biết người kia đang online hay offline?\n\nTrả lời: Trong danh sách cuộc trò chuyện và header của khung chat, bạn sẽ thấy:\n- 🟢 **Chấm xanh** bên cạnh ảnh đại diện: Người đó đang **online**.\n- Không có chấm hoặc trạng thái mờ: Người đó đang **offline**.\n\nTrạng thái online được cập nhật theo thời gian thực qua kết nối WebSocket.",
+    "metadata": {
+      "id": "typing-002",
+      "category": "Trạng thái & Chỉ báo",
+      "question": "Làm thế nào để biết người kia đang online hay offline?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 350,
+      "chunk_strategy": "single",
+      "doc_index": 25
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để chặn (block) một người dùng?\n\nTrả lời: 1. Mở cuộc trò chuyện với người bạn muốn chặn.\n2. Nhấn vào nút **\"Chi tiết bảo mật\"** hoặc biểu tượng thông tin (ℹ️) trên header.\n3. Chọn **\"Chặn liên hệ\"** (Block Contact) và xác nhận.\n\nSau khi chặn, người đó **không thể gửi tin nhắn hay khởi tạo cuộc trò chuyện mới** với bạn. Cuộc trò chuyện sẽ chuyển sang trạng thái **BLOCKED**.",
+    "metadata": {
+      "id": "block-001",
+      "category": "Chặn & Bỏ chặn",
+      "question": "Làm thế nào để chặn (block) một người dùng?",
+      "source": "spec-002",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 396,
+      "chunk_strategy": "single",
+      "doc_index": 26
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để bỏ chặn (unblock) một người?\n\nTrả lời: 1. Tìm cuộc trò chuyện với người bạn đã chặn (sẽ hiển thị nhãn **\"Đã bị chặn\"**).\n2. Nhấn vào nút **\"Bỏ chặn liên hệ\"** (Unblock Contact).\n3. Xác nhận hành động.\n\nNếu khóa mã hóa của cả hai bên **không thay đổi** kể từ khi chặn, cuộc trò chuyện sẽ ngay lập tức khôi phục về **VERIFIED_ACTIVE** và bạn có thể nhắn tin lại. Nếu khóa đã thay đổi, hệ thống sẽ yêu cầu **xác minh lại 4 lớp**.",
+    "metadata": {
+      "id": "block-002",
+      "category": "Chặn & Bỏ chặn",
+      "question": "Làm thế nào để bỏ chặn (unblock) một người?",
+      "source": "spec-002",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 450,
+      "chunk_strategy": "single",
+      "doc_index": 27
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tôi bỏ chặn nhưng người kia vẫn chặn tôi thì sao?\n\nTrả lời: Chặn là **quan hệ một chiều**. Nếu bạn bỏ chặn người kia nhưng **họ vẫn còn đang chặn bạn**, bạn vẫn không thể nhắn tin cho họ. Cuộc trò chuyện sẽ vẫn bị hạn chế cho đến khi người kia cũng bỏ chặn bạn.",
+    "metadata": {
+      "id": "block-003",
+      "category": "Chặn & Bỏ chặn",
+      "question": "Tôi bỏ chặn nhưng người kia vẫn chặn tôi thì sao?",
+      "source": "spec-002",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 270,
+      "chunk_strategy": "single",
+      "doc_index": 28
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Re-handshake là gì và khi nào cần thực hiện?\n\nTrả lời: **Re-handshake** là quy trình xác minh lại 4 lớp bảo mật cho một cuộc trò chuyện **đã tồn tại**. Bạn cần thực hiện khi:\n- Bạn hoặc người kia **đăng nhập trên thiết bị/trình duyệt mới**.\n- Bạn hoặc người kia **xóa dữ liệu trình duyệt**.\n- Hệ thống hiển thị banner cảnh báo **\"Khóa bảo mật đã thay đổi\"**.\n\nTrong khi re-handshake đang diễn ra, ô nhập tin nhắn bị khóa để đảm bảo không có tin nhắn nào bị gửi với khóa sai.",
+    "metadata": {
+      "id": "rehandshake-001",
+      "category": "Xác minh lại (Re-handshake)",
+      "question": "Re-handshake là gì và khi nào cần thực hiện?",
+      "source": "spec-002",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 483,
+      "chunk_strategy": "single",
+      "doc_index": 29
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Làm thế nào để thực hiện re-handshake?\n\nTrả lời: 1. Mở cuộc trò chuyện — hệ thống sẽ tự động phát hiện sự thay đổi khóa và hiển thị **banner cảnh báo màu vàng/đỏ**.\n2. Nhấn nút **\"Xác minh lại\"** (Re-verify) trên banner.\n3. Hoàn thành lại **4 lớp xác minh** (tương tự như lần kết nối đầu tiên).\n4. Sau khi cả hai bên xác nhận **mã an toàn mới 6 chữ số**, cuộc trò chuyện trở về trạng thái **VERIFIED_ACTIVE**.\n\nToàn bộ quá trình mất dưới **30 giây** nếu cả hai bên đang online.",
+    "metadata": {
+      "id": "rehandshake-002",
+      "category": "Xác minh lại (Re-handshake)",
+      "question": "Làm thế nào để thực hiện re-handshake?",
+      "source": "spec-002",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 486,
+      "chunk_strategy": "single",
+      "doc_index": 30
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Sau khi re-handshake, tin nhắn cũ có đọc được không?\n\nTrả lời: Trên thiết bị/trình duyệt mới **không có cache cục bộ**, bạn sẽ **không đọc được tin nhắn cũ** vì chúng được mã hóa bằng khóa cũ đã mất. Hệ thống sẽ hiển thị một **đường phân cách bảo mật** (security timeline divider) trong luồng chat, thông báo rằng một phiên E2EE mới đã được thiết lập. Từ đó trở đi, các tin nhắn mới sẽ được mã hóa và giải mã bình thường.",
+    "metadata": {
+      "id": "rehandshake-003",
+      "category": "Xác minh lại (Re-handshake)",
+      "question": "Sau khi re-handshake, tin nhắn cũ có đọc được không?",
+      "source": "spec-002",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 430,
+      "chunk_strategy": "single",
+      "doc_index": 31
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Giao diện ứng dụng trông như thế nào?\n\nTrả lời: Giao diện được thiết kế theo phong cách **Facebook Messenger**, bao gồm:\n- **Thanh bên trái (Sidebar)**: Danh sách cuộc trò chuyện, sắp xếp theo tin nhắn gần nhất, badge số tin nhắn chưa đọc, và ô tìm kiếm Gmail.\n- **Khu vực chat giữa**: Bong bóng tin nhắn (tin nhắn của bạn bên phải, tin nhắn người kia bên trái), dấu thời gian, trạng thái đọc.\n- **Bảng thông tin bên phải**: Chi tiết bảo mật, mã an toàn, lịch sử xác minh.\n\nGiao diện hỗ trợ **chế độ tối (dark mode)** và **responsive** từ điện thoại (360px) đến màn hình 4K (2560px).",
+    "metadata": {
+      "id": "ui-001",
+      "category": "Giao diện",
+      "question": "Giao diện ứng dụng trông như thế nào?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 592,
+      "chunk_strategy": "single_protected",
+      "doc_index": 32
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Ứng dụng có hoạt động trên điện thoại không?\n\nTrả lời: **Có.** Giao diện hỗ trợ đầy đủ trên điện thoại. Khi dùng màn hình nhỏ:\n- Sidebar cuộc trò chuyện **ẩn đi** và chỉ hiện khu vực chat.\n- Có nút **quay lại** (back) để trở về danh sách cuộc trò chuyện.\n- Giao diện tự động điều chỉnh cho màn hình từ **360px trở lên**.",
+    "metadata": {
+      "id": "ui-002",
+      "category": "Giao diện",
+      "question": "Ứng dụng có hoạt động trên điện thoại không?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 329,
+      "chunk_strategy": "single",
+      "doc_index": 33
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Tôi thấy thông báo \"Tin nhắn không thể giải mã\" thì phải làm gì?\n\nTrả lời: Thông báo **\"Tin nhắn không thể giải mã\"** xảy ra khi dữ liệu tin nhắn bị hỏng hoặc khóa phiên không khớp. Các bước xử lý:\n1. **Thử tải lại trang** (F5 hoặc Ctrl+R).\n2. Nếu vẫn còn lỗi, kiểm tra xem bạn có đang dùng **đúng trình duyệt** đã khởi tạo khóa ban đầu không.\n3. Nếu bạn vừa đăng nhập trên thiết bị mới, hãy thực hiện **re-handshake** với người đó.\n4. Nếu lỗi vẫn tiếp tục, liên hệ hỗ trợ.",
+    "metadata": {
+      "id": "error-001",
+      "category": "Lỗi thường gặp",
+      "question": "Tôi thấy thông báo \"Tin nhắn không thể giải mã\" thì phải làm gì?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 482,
+      "chunk_strategy": "single",
+      "doc_index": 34
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Mất kết nối mạng giữa chừng thì tin nhắn có bị mất không?\n\nTrả lời: **Không bị mất.** Hệ thống có cơ chế tự động:\n- **Kết nối WebSocket** sẽ tự động kết nối lại với **exponential backoff** khi mạng phục hồi.\n- Tin nhắn đã gửi sẽ được **lưu trữ tạm** và gửi lại.\n- Tin nhắn từ người kia trong lúc bạn offline sẽ **được giao ngay** khi bạn kết nối lại.\n\nQuá trình handshake bị gián đoạn giữa chừng cũng sẽ **tiếp tục tự động** mà không mất trạng thái.",
+    "metadata": {
+      "id": "error-002",
+      "category": "Lỗi thường gặp",
+      "question": "Mất kết nối mạng giữa chừng thì tin nhắn có bị mất không?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 458,
+      "chunk_strategy": "single",
+      "doc_index": 35
+    }
+  },
+  {
+    "page_content": "Câu hỏi: Phiên đăng nhập hết hạn thì phải làm gì?\n\nTrả lời: Khi phiên đăng nhập hết hạn, hệ thống sẽ tự động **chuyển hướng bạn về trang đăng nhập** và hiển thị thông báo yêu cầu đăng nhập lại. Chỉ cần nhấn **\"Đăng nhập bằng Google\"** và hoàn tất OAuth flow. Khóa mã hóa cục bộ vẫn được giữ nguyên (trừ khi bạn xóa dữ liệu trình duyệt).",
+    "metadata": {
+      "id": "error-003",
+      "category": "Lỗi thường gặp",
+      "question": "Phiên đăng nhập hết hạn thì phải làm gì?",
+      "source": "spec-001",
+      "doc_type": "faq",
+      "language": "vi",
+      "app": "ChatMessageE2E",
+      "chunk_index": 0,
+      "chunk_total": 1,
+      "char_count": 336,
+      "chunk_strategy": "single",
+      "doc_index": 36
+    }
+  }
+]

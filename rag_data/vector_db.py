@@ -14,9 +14,16 @@ Config : rag_data/.env  (GOOGLE_API_KEY — dùng để embed câu hỏi khi tes
 
 import json
 import os
+import sys
 import math
 from pathlib import Path
 from typing import List, Dict, Any, Optional
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 
 try:
     from dotenv import load_dotenv
@@ -35,7 +42,8 @@ TOP_K_DEFAULT     = 3      # Số kết quả trả về mặc định
 SIMILARITY_CUTOFF = 0.55   # Ngưỡng tối thiểu: kết quả similarity thấp hơn sẽ bị loại
 
 # ── Tham số Embedding (dùng lại khi query) ───────────────────────────────────
-EMBEDDING_MODEL = "models/text-embedding-004"
+EMBEDDING_MODEL = "models/gemini-embedding-001"
+
 
 
 # ════════════════════════════════════════════════════════════════
@@ -365,14 +373,6 @@ def main():
 
     # 5. Thống kê
     print_db_statistics(collection, embeddings)
-
-    # 6. Test E2E với 3 câu hỏi mẫu thực tế
-    sample_queries = [
-        "Tôi muốn tìm bạn bè thì làm thế nào?",
-        "Làm sao để thu hồi tin nhắn đã gửi?",
-        "Safety code là cái gì và tại sao cần xác minh?",
-    ]
-    test_e2e_query(collection, sample_queries)
 
     print("\n✅ Vector Database hoàn tất!")
     print("🚀 Offline Pipeline (4 bước) đã hoàn chỉnh!")

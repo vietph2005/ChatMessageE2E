@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c904694-190c-4a02-a6f6-746ed077b33c" name="Changes" comment="" />
+    <list default="true" id="0c904694-190c-4a02-a6f6-746ed077b33c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/rag_data/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/embedding_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/rag_data/embedding_pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/rag_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/rag_data/rag_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/rag_online.py" beforeDir="false" afterPath="$PROJECT_DIR$/rag_data/rag_online.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/test_rag_api.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/vector_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/rag_data/vector_db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/config/ChatbotConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/config/ChatbotConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,6 +92,7 @@
       <workItem from="1787927053892" duration="3510000" />
       <workItem from="1788014377600" duration="2487000" />
       <workItem from="1788076149122" duration="4865000" />
+      <workItem from="1788419760386" duration="2481000" />
     </task>
     <servers />
   </component>

@@ -17,9 +17,16 @@ Config : rag_data/.env  (GOOGLE_API_KEY)
 
 import json
 import os
+import sys
 import time
 from pathlib import Path
 from typing import List, Dict, Any
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 
 # ── Load API Key từ file .env ─────────────────────────────────────────────────
 try:
@@ -36,11 +43,12 @@ OUTPUT_DIR  = BASE_DIR / "embeddings"
 OUTPUT_PATH = OUTPUT_DIR / "embeddings.json"
 
 # ── Tham số Embedding ─────────────────────────────────────────────────────────
-EMBEDDING_MODEL = "models/text-embedding-004"
-VECTOR_DIM      = 768    # Số chiều vector của text-embedding-004
-BATCH_SIZE      = 20     # Số chunks gửi mỗi lần gọi API
-MAX_RETRIES     = 3      # Số lần thử lại nếu gặp lỗi
-RETRY_DELAY     = 2.0    # Giây chờ giữa các lần retry
+EMBEDDING_MODEL = "models/gemini-embedding-001"
+VECTOR_DIM      = 3072    # Số chiều vector của gemini-embedding-001
+BATCH_SIZE      = 10      # Số chunk gửi mỗi batch
+MAX_RETRIES     = 3       # Số lần retry khi gặp lỗi
+RETRY_DELAY     = 2.0     # Thời gian chờ giữa các lần retry (giây)
+
 
 
 # ── Khởi tạo Google Generative AI client ────────────────────────────────────
@@ -280,10 +288,7 @@ def main():
     # 5. Thống kê
     print_statistics(embedded)
 
-    # 6. Kiểm tra cosine similarity
-    run_similarity_check(embedded)
-
-    # 7. Lưu ra file
+    # 6. Lưu ra file
     save_embeddings(embedded, OUTPUT_PATH)
 
     print("\n✅ Embedding hoàn tất!")
