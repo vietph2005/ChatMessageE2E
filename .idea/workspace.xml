@@ -6,6 +6,49 @@
   <component name="ChangeListManager">
     <list default="true" id="0c904694-190c-4a02-a6f6-746ed077b33c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/chatbot/ChatInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chatbot/ChatInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/chatbot/ChatWindow.test.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/chatbot/ChatWindow.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/chatbot/MessageBubble.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/chatbot/MessageBubble.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/chatbot/SourceBadge.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/AppShell.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/AppShell.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/sidebar/ConversationSidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/sidebar/ConversationSidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/hooks/useChatbot.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/hooks/useChatbot.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ChatbotPage.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/services/chatbotService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/services/chatbotService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/.env.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/chunking.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/chunks/chunks.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/corpus/faq_corpus.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/data_preparation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/docs/01_dang_nhap_va_tai_khoan.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/docs/02_bao_mat_va_ma_hoa.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/docs/03_ket_noi_va_xac_minh_4_lop.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/docs/04_nhan_tin_va_da_phuong_tien.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/docs/05_chan_lien_he_va_su_co.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/embedding_pipeline.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/embeddings/embeddings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/ingest.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/prepared/documents.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/rag_api.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/rag_online.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/conftest.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/contract/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/contract/test_rag_api.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/integration/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/integration/test_rag_evaluation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/integration/test_vector_db.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/unit/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/unit/test_chunking.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/unit/test_data_preparation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/unit/test_embedding_pipeline.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/tests/unit/test_rag_online.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/vector_db.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/application/chatbot/ChatbotService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/rag/RagApiClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/rag/RagApiException.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,20 +93,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;fc40b837954571ba09f631ae04d86b7d&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "nodejs_package_manager_path": "npm",
+    "spring.configuration.checksum": "fc40b837954571ba09f631ae04d86b7d",
+    "ts.external.directory.path": "C:\\Users\\phamh\\IdeaProjects\\TestSpec\\ChatMessage\\ChatMessageE2E\\frontend\\node_modules\\typescript\\lib"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="ChatMessageE2EApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="ChatMessageE2E" />
@@ -87,6 +131,8 @@
       <workItem from="1788419760386" duration="2530000" />
       <workItem from="1788531887358" duration="605000" />
       <workItem from="1788535948116" duration="47000" />
+      <workItem from="1788797242865" duration="47000" />
+      <workItem from="1788799075918" duration="1494000" />
     </task>
     <servers />
   </component>

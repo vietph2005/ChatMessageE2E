@@ -1,38 +1,51 @@
-export interface FaqSource {
-  id: string;
-  category: string;
-  question: string;
-  similarity: number;
-}
+// ============================================================
+//  CHATBOT SERVICE — Tầng giao tiếp API giữa Frontend và Backend
+// ============================================================
 
-export interface ChatbotResponse {
-  answer: string;
-  sources: FaqSource[];
-  hasContext: boolean;
-}
+import { ChatbotResponse } from '../types/chatbot.types';
+
+// URL API endpoint của chatbot backend
+const CHATBOT_API_URL = '/api/chatbot/ask';
 
 export class ChatbotService {
-  private static BASE_URL = '/api/chatbot';
-
+  /**
+   * Gửi câu hỏi của người dùng tới Backend RAG
+   * @param question - Câu hỏi dạng chuỗi văn bản (string)
+   * @returns Promise<ChatbotResponse> - Câu trả lời kèm danh sách nguồn trích dẫn
+   */
   static async ask(question: string): Promise<ChatbotResponse> {
-    const response = await fetch(`${this.BASE_URL}/ask`, {
+    // 1. Kiểm tra đầu vào: không gửi request nếu chuỗi rỗng
+    const trimmed = question.trim();
+    if (!trimmed) {
+      throw new Error('Câu hỏi không được để trống.');
+    }
+
+    // 2. Gửi request HTTP POST tới Backend
+    const response = await fetch(CHATBOT_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ question }),
+      // Chuyển body sang JSON: { "question": "..." }
+      body: JSON.stringify({ question: trimmed }),
     });
 
+    // 3. Nếu server trả về mã lỗi (4xx, 5xx), ném lỗi với thông điệp rõ ràng
     if (!response.ok) {
-      let errorData;
+      let errorMessage = `Yêu cầu thất bại (Mã lỗi: ${response.status})`;
       try {
-        errorData = await response.json();
+        const errorData = await response.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
+        }
       } catch {
-        errorData = { message: response.statusText };
+        // Nếu response không phải JSON thì dùng thông điệp mặc định
       }
-      throw new Error(errorData.message || `Lỗi máy chủ (HTTP ${response.status})`);
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    // 4. Parse dữ liệu JSON trả về theo định dạng ChatbotResponse
+    const data: ChatbotResponse = await response.json();
+    return data;
   }
 }

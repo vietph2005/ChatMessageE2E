@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, MessageSquarePlus } from 'lucide-react';
+import { LogOut, MessageSquarePlus, Bot, Sparkles } from 'lucide-react';
 import { ConversationSummaryDto } from '../../services/apiClient';
 import { ExactGmailSearchBar } from './ExactGmailSearchBar';
 import { ConversationItem } from './ConversationItem';
@@ -8,6 +8,8 @@ import { useAuth } from '../../hooks/useAuth';
 interface Props {
   conversations: ConversationSummaryDto[];
   activeConversationId: string | null;
+  isChatbotActive?: boolean;
+  onOpenChatbot?: () => void;
   onSelectConversation: (id: string) => void;
   onStartChat: (recipientEmail: string) => Promise<void>;
 }
@@ -15,6 +17,8 @@ interface Props {
 export const ConversationSidebar: React.FC<Props> = ({
   conversations,
   activeConversationId,
+  isChatbotActive,
+  onOpenChatbot,
   onSelectConversation,
   onStartChat,
 }) => {
@@ -51,6 +55,34 @@ export const ConversationSidebar: React.FC<Props> = ({
 
       {/* Exact Gmail Search for privacy */}
       <ExactGmailSearchBar onStartChat={onStartChat} />
+
+      {/* AI Assistant Quick Access */}
+      {onOpenChatbot && (
+        <div className="px-3 pt-2">
+          <button
+            onClick={onOpenChatbot}
+            className={`w-full p-2.5 rounded-xl border flex items-center justify-between group transition-all shadow-sm ${
+              isChatbotActive
+                ? 'bg-gradient-to-r from-blue-600/30 to-emerald-600/30 border-blue-500 text-white'
+                : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-700/60 text-slate-300 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center text-white shadow">
+                <Bot size={17} />
+              </div>
+              <div className="text-left">
+                <div className="text-xs font-semibold text-white group-hover:text-blue-300 transition-colors flex items-center gap-1.5">
+                  Trợ lý AI (RAG FAQ)
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+                <div className="text-[10px] text-slate-400">Hỏi đáp hệ thống & trợ giúp</div>
+              </div>
+            </div>
+            <Sparkles size={14} className="text-amber-400 shrink-0" />
+          </button>
+        </div>
+      )}
 
       {/* Conversations List */}
       <div className="flex-1 overflow-y-auto py-2">

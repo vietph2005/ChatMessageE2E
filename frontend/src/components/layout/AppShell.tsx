@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useChat } from '../../hooks/useChat';
 import { ConversationSidebar } from '../sidebar/ConversationSidebar';
@@ -9,9 +9,11 @@ import { TypingIndicator } from '../chat/TypingIndicator';
 import { HandshakeModal } from '../handshake/HandshakeModal';
 import { SafetyNumberAlertBanner } from '../chat/SafetyNumberAlertBanner';
 import { ShieldCheck, MessageCircle, Lock, Ban } from 'lucide-react';
+import { ChatBotPage } from '../../pages/ChatBotPage';
 
 export const AppShell: React.FC = () => {
   const { user } = useAuth();
+  const [isChatbotOpen, setIsChatbotOpen] = useState<boolean>(false);
   const {
     conversations,
     activeConversationId,
@@ -55,19 +57,29 @@ export const AppShell: React.FC = () => {
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Sidebar (Full screen on mobile if no active conversation) */}
-      <div className={`h-full ${activeConversationId ? 'hidden md:flex' : 'flex w-full'}`}>
+      {/* Sidebar (Full screen on mobile if no active conversation and chatbot closed) */}
+      <div className={`h-full ${(activeConversationId || isChatbotOpen) ? 'hidden md:flex' : 'flex w-full'}`}>
         <ConversationSidebar
           conversations={conversations}
           activeConversationId={activeConversationId}
-          onSelectConversation={(id) => setActiveConversationId(id)}
+          isChatbotActive={isChatbotOpen}
+          onOpenChatbot={() => {
+            setIsChatbotOpen(true);
+            setActiveConversationId(null);
+          }}
+          onSelectConversation={(id) => {
+            setIsChatbotOpen(false);
+            setActiveConversationId(id);
+          }}
           onStartChat={startNewChat}
         />
       </div>
 
-      {/* Main Chat Area */}
-      <div className={`flex-1 h-full flex flex-col relative ${!activeConversationId ? 'hidden md:flex' : 'flex'}`}>
-        {activeConversationId && peerUser ? (
+      {/* Main Chat Area / Chatbot Area */}
+      <div className={`flex-1 h-full flex flex-col relative ${(!activeConversationId && !isChatbotOpen) ? 'hidden md:flex' : 'flex'}`}>
+        {isChatbotOpen ? (
+          <ChatBotPage onBack={() => setIsChatbotOpen(false)} />
+        ) : activeConversationId && peerUser ? (
           <>
             {/* Chat Top Header */}
             <ChatHeader

@@ -1,86 +1,116 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Loader2 } from 'lucide-react';
+// ============================================================
+//  CHAT INPUT — Khung nhập câu hỏi và nút gửi tin nhắn
+// ============================================================
+
+import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { Send, Loader2, Sparkles } from 'lucide-react';
 
 interface ChatInputProps {
-  onSendMessage: (question: string) => void;
-  isLoading: boolean;
-  placeholder?: string;
+  onSend: (content: string) => void;  // Hàm callback khi người dùng gửi câu hỏi
+  isLoading: boolean;                 // Trạng thái đang tải (disable input & button)
+  placeholder?: string;               // Chuỗi placeholder tuỳ chọn
 }
 
+// Một vài câu hỏi gợi ý nhanh giúp người dùng tiện thử nghiệm RAG
+const QUICK_PROMPTS = [
+  'Làm sao để kết bạn mới?',
+  'Dữ liệu tin nhắn có được mã hoá E2E không?',
+  'Tôi quên mật khẩu thì lấy lại như thế nào?',
+];
+
 export const ChatInput: React.FC<ChatInputProps> = ({
-  onSendMessage,
+  onSend,
   isLoading,
-  placeholder = 'Nhập câu hỏi về ChatMessage (ví dụ: làm sao tìm bạn bè?)...',
+  placeholder = 'Nhập câu hỏi của bạn về hệ thống... (Nhấn Enter để gửi)',
 }) => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState<string>('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto focus input on load
+  // Tự động điều chỉnh chiều cao của textarea theo độ dài văn bản
   useEffect(() => {
-    if (!isLoading) {
-      textareaRef.current?.focus();
-    }
-  }, [isLoading]);
-
-  // Adjust height dynamically
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      // Giới hạn chiều cao tối đa khoảng 120px (khoảng 4-5 dòng)
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
     }
   }, [text]);
 
+  // Xử lý gửi tin nhắn
   const handleSend = () => {
     const trimmed = text.trim();
     if (!trimmed || isLoading) return;
-    onSendMessage(trimmed);
-    setText('');
+
+    onSend(trimmed);
+    setText(''); // Xoá ô nhập sau khi gửi
+
+    // Reset chiều cao textarea về 1 dòng
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  // Bắt sự kiện phím: Enter = Gửi, Shift + Enter = Xuống dòng
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
+      e.preventDefault(); // Ngăn trình duyệt nhảy dòng mới mặc định
       handleSend();
     }
   };
 
-  const canSend = text.trim().length > 0 && !isLoading;
-
   return (
-    <div className="w-full bg-slate-900/90 backdrop-blur-sm border-t border-slate-800 p-3 md:p-4">
-      <div className="max-w-4xl mx-auto flex items-end gap-2 bg-slate-950 border border-slate-800 rounded-2xl p-1.5 focus-within:border-blue-500/70 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all shadow-lg">
+    <div className="border-t border-slate-800 bg-slate-900/90 backdrop-blur-md p-4">
+      {/* ── 1. Gợi ý câu hỏi nhanh (Quick Prompts) ── */}
+      <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 text-xs no-scrollbar">
+        <span className="flex items-center gap-1 text-slate-500 shrink-0 font-medium">
+          <Sparkles size={13} className="text-amber-400" />
+          Gợi ý:
+        </span>
+        {QUICK_PROMPTS.map((prompt, idx) => (
+          <button
+            key={idx}
+            type="button"
+            disabled={isLoading}
+            onClick={() => onSend(prompt)}
+            className="shrink-0 px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
+
+      {/* ── 2. Khung soạn thảo & Nút gửi ── */}
+      <div className="flex items-end gap-2 bg-slate-800/80 border border-slate-700/70 focus-within:border-blue-500 rounded-2xl p-2 transition-colors shadow-inner">
         <textarea
           ref={textareaRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
+          placeholder={placeholder}
           disabled={isLoading}
           rows={1}
-          placeholder={placeholder}
-          maxLength={1000}
-          className="w-full resize-none bg-transparent px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none disabled:opacity-60 max-h-[120px]"
+          className="flex-1 bg-transparent text-slate-100 placeholder-slate-400 text-sm resize-none focus:outline-none px-2 py-1.5 max-h-[120px] disabled:opacity-50"
         />
 
+        {/* Nút gửi */}
         <button
           type="button"
           onClick={handleSend}
-          disabled={!canSend}
-          aria-label="Gửi câu hỏi"
-          className="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white shrink-0 transition-colors shadow-sm"
+          disabled={!text.trim() || isLoading}
+          aria-label="Gửi tin nhắn"
+          className="w-9 h-9 rounded-xl flex items-center justify-center bg-blue-600 hover:bg-blue-500 active:scale-95 text-white disabled:opacity-40 disabled:hover:bg-blue-600 disabled:active:scale-100 transition-all shrink-0 shadow"
         >
           {isLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loader2 size={16} className="animate-spin" />
           ) : (
-            <Send className="w-4 h-4 ml-0.5" />
+            <Send size={16} />
           )}
         </button>
       </div>
-      <div className="max-w-4xl mx-auto flex justify-between items-center mt-1.5 px-2 text-[11px] text-slate-500">
-        <span>Nhấn Enter để gửi, Shift + Enter để xuống dòng</span>
-        <span>{text.length}/1000</span>
+
+      {/* Hướng dẫn phím tắt nhỏ ở dưới */}
+      <div className="text-[11px] text-slate-400 mt-1.5 text-right pr-2">
+        Nhấn <kbd className="px-1 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Enter</kbd> để gửi, <kbd className="px-1 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Shift + Enter</kbd> để xuống dòng
       </div>
     </div>
   );
