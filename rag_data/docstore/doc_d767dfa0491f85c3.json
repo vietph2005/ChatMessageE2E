@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_d767dfa0491f85c3",
+  "content": "Trên thiết bị/trình duyệt mới **không có cache cục bộ**, bạn sẽ **không đọc được tin nhắn cũ** vì chúng được mã hóa bằng khóa cũ đã mất. Hệ thống sẽ hiển thị một **đường phân cách bảo mật** (security timeline divider) trong luồng chat, thông báo rằng một phiên E2EE mới đã được thiết lập. Từ đó trở đi, các tin nhắn mới sẽ được mã hóa và giải mã bình thường."
+}

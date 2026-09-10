@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_c5627cc857bf9fd5",
+  "content": "**Re-handshake** là quy trình xác minh lại 4 lớp bảo mật cho một cuộc trò chuyện **đã tồn tại**. Bạn cần thực hiện khi:\n- Bạn hoặc người kia **đăng nhập trên thiết bị/trình duyệt mới**.\n- Bạn hoặc người kia **xóa dữ liệu trình duyệt**.\n- Hệ thống hiển thị banner cảnh báo **\"Khóa bảo mật đã thay đổi\"**.\nTrong khi re-handshake đang diễn ra, ô nhập tin nhắn bị khóa để đảm bảo không có tin nhắn nào bị gửi với khóa sai."
+}

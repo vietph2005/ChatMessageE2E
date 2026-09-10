@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_1e4182f90dd044bc",
+  "content": "**Không sao cả.** Quy trình kết nối 4 lớp hoạt động **không đồng bộ (asynchronous)** — bạn có thể gửi lời mời kể cả khi người kia đang offline. Lời mời sẽ được lưu trên máy chủ. Khi người đó đăng nhập lại, họ sẽ thấy thông báo **\"[Tên bạn] muốn kết nối\"** và có thể chấp nhận hoặc từ chối."
+}

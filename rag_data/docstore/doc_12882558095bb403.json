@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_12882558095bb403",
+  "content": "Không. Ứng dụng sử dụng mã hóa đầu cuối (End-to-End Encryption — E2EE) với thuật toán **AES-256-GCM**. Tin nhắn được mã hóa ngay trên thiết bị của bạn trước khi gửi đi. Máy chủ **chỉ lưu trữ dữ liệu đã mã hóa** — không ai, kể cả nhà phát triển ứng dụng, có thể đọc nội dung tin nhắn của bạn. Chỉ bạn và người nhận (với khóa giải mã cục bộ) mới đọc được."
+}

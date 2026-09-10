@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_f50e3655f55c5b3d",
+  "content": "Mỗi tin nhắn sẽ hiển thị một trong các trạng thái sau:\n- **Đang gửi** – Tin nhắn đang được mã hóa và truyền đi.\n- **Đã gửi** ✓ – Máy chủ đã nhận được tin nhắn.\n- **Đã nhận** ✓✓ – Thiết bị của người nhận đã tải về tin nhắn.\n- **Đã đọc** ✓✓ (xanh) – Người nhận đã mở và đọc tin nhắn."
+}

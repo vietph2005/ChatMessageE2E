@@ -202,6 +202,8 @@ def verify_and_refine(
         }
 
     current_answer = answer
+    is_grounded, ground_reason = True, ""
+    is_useful, useful_reason = True, ""
 
     # Vòng lặp kiểm định & sửa lỗi (Self-Correction)
     for attempt in range(max_retries + 1):

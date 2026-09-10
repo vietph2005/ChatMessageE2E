@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_4f8fd015667a64c6",
+  "content": "Sau khi kênh chat được xác minh (trạng thái **VERIFIED_ACTIVE**), bạn có thể:\n1. Nhập nội dung tin nhắn vào ô nhập liệu ở cuối màn hình chat.\n2. Nhấn **Enter** hoặc nút **Gửi** để gửi tin nhắn.\nTin nhắn sẽ được mã hóa ngay trên thiết bị của bạn trước khi truyền đi. Người nhận sẽ nhận được trong vòng dưới 500ms nếu họ đang online."
+}

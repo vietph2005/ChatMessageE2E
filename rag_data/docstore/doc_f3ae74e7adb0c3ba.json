@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_f3ae74e7adb0c3ba",
+  "content": "1. Mở cuộc trò chuyện — hệ thống sẽ tự động phát hiện sự thay đổi khóa và hiển thị **banner cảnh báo màu vàng/đỏ**.\n2. Nhấn nút **\"Xác minh lại\"** (Re-verify) trên banner.\n3. Hoàn thành lại **4 lớp xác minh** (tương tự như lần kết nối đầu tiên).\n4. Sau khi cả hai bên xác nhận **mã an toàn mới 6 chữ số**, cuộc trò chuyện trở về trạng thái **VERIFIED_ACTIVE**.\nToàn bộ quá trình mất dưới **30 giây** nếu cả hai bên đang online."
+}

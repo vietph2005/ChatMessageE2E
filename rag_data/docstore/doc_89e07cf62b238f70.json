@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_89e07cf62b238f70",
+  "content": "Không bị mất. Hệ thống có cơ chế tự động:\n- **Kết nối WebSocket** sẽ tự động kết nối lại với **exponential backoff** khi mạng phục hồi.\n- Tin nhắn đã gửi sẽ được **lưu trữ tạm** và gửi lại.\n- Tin nhắn từ người kia trong lúc bạn offline sẽ **được giao ngay** khi bạn kết nối lại.\nQuá trình handshake bị gián đoạn giữa chừng cũng sẽ **tiếp tục tự động** mà không mất trạng thái."
+}

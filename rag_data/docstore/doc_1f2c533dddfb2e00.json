@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_1f2c533dddfb2e00",
+  "content": "**Mã an toàn (Safety Code)** là một chuỗi 6 chữ số (ví dụ: `842 910`) được tính toán tự động từ khóa công khai của cả hai bên. Đây là xác minh **Lớp 4** trong quy trình bảo mật. Mục đích là đảm bảo không có ai đứng giữa đánh cắp kết nối của bạn (tấn công Man-in-the-Middle). Nếu hai bên thấy cùng một mã, hãy nhấn **\"Xác nhận khớp mã\"** để hoàn tất thiết lập kênh bảo mật."
+}

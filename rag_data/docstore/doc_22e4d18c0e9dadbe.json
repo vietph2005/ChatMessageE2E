@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_22e4d18c0e9dadbe",
+  "content": "1. Mở cuộc trò chuyện bạn muốn kiểm tra.\n2. Nhấn vào nút **\"Chi tiết bảo mật\"** (Security Details) trên header của cuộc trò chuyện.\n3. Bảng thông tin sẽ hiển thị:\n   - Trạng thái của **4 lớp xác minh**\n   - **Mã an toàn 60 chữ số** đầy đủ (SHA-256 fingerprint)\n   - **Mã QR** để xác minh trực tiếp\n   - Lịch sử xác minh"
+}

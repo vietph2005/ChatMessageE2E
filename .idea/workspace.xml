@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c904694-190c-4a02-a6f6-746ed077b33c" name="Changes" comment="" />
+    <list default="true" id="0c904694-190c-4a02-a6f6-746ed077b33c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/rag_data/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rag_data/layers/layer1_intent_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/rag_data/layers/layer1_intent_classifier.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -48,21 +52,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "nodejs_package_manager_path": "npm",
-    "spring.configuration.checksum": "fc40b837954571ba09f631ae04d86b7d",
-    "ts.external.directory.path": "C:\\Users\\phamh\\IdeaProjects\\TestSpec\\ChatMessage\\ChatMessageE2E\\frontend\\node_modules\\typescript\\lib"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;fc40b837954571ba09f631ae04d86b7d&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\phamh\\IdeaProjects\\TestSpec\\ChatMessage\\ChatMessageE2E\\frontend\\node_modules\\typescript\\lib&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="ChatMessageE2EApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="ChatMessageE2E" />
@@ -88,6 +92,10 @@
       <workItem from="1788535948116" duration="47000" />
       <workItem from="1788797242865" duration="47000" />
       <workItem from="1788799075918" duration="1559000" />
+      <workItem from="1788870938789" duration="1193000" />
+      <workItem from="1788881054310" duration="97000" />
+      <workItem from="1788927306559" duration="968000" />
+      <workItem from="1788963172324" duration="599000" />
     </task>
     <servers />
   </component>

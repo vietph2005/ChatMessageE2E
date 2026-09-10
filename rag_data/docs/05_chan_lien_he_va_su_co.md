@@ -26,7 +26,7 @@ Giao diện được thiết kế theo phong cách **Facebook Messenger**, bao g
 Giao diện hỗ trợ **chế độ tối (dark mode)** và **responsive** từ điện thoại (360px) đến màn hình 4K (2560px).
 
 ## Ứng dụng có hoạt động trên điện thoại không?
-**Có.** Giao diện hỗ trợ đầy đủ trên điện thoại. Khi dùng màn hình nhỏ:
+Có. Giao diện hỗ trợ đầy đủ trên điện thoại. Khi dùng màn hình nhỏ:
 - Sidebar cuộc trò chuyện **ẩn đi** và chỉ hiện khu vực chat.
 - Có nút **quay lại** (back) để trở về danh sách cuộc trò chuyện.
 - Giao diện tự động điều chỉnh cho màn hình từ **360px trở lên**.
@@ -39,7 +39,7 @@ Thông báo **"Tin nhắn không thể giải mã"** xảy ra khi dữ liệu ti
 4. Nếu lỗi vẫn tiếp tục, liên hệ hỗ trợ.
 
 ## Mất kết nối mạng giữa chừng thì tin nhắn có bị mất không?
-**Không bị mất.** Hệ thống có cơ chế tự động:
+Không bị mất. Hệ thống có cơ chế tự động:
 - **Kết nối WebSocket** sẽ tự động kết nối lại với **exponential backoff** khi mạng phục hồi.
 - Tin nhắn đã gửi sẽ được **lưu trữ tạm** và gửi lại.
 - Tin nhắn từ người kia trong lúc bạn offline sẽ **được giao ngay** khi bạn kết nối lại.

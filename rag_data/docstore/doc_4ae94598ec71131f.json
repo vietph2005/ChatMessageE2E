@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_4ae94598ec71131f",
+  "content": "Có, **tin nhắn cũ sẽ không hiển thị** trên thiết bị/trình duyệt mới. Vì lý do bảo mật, khóa riêng tư (private key) và lịch sử tin nhắn được lưu **cục bộ trong trình duyệt** (IndexedDB) và không bao giờ được tải lên máy chủ. Khi đăng nhập trên trình duyệt mới, hệ thống sẽ tự tạo cặp khóa mới và thông báo cho các liên lạc của bạn rằng **mã an toàn (Safety Code) đã thay đổi**. Từ đó, bạn chỉ thấy được những tin nhắn mới sau khi thực hiện xác minh lại (re-handshake)."
+}

@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_99acaa3563d39843",
+  "content": "1. Tìm cuộc trò chuyện với người bạn đã chặn (sẽ hiển thị nhãn **\"Đã bị chặn\"**).\n2. Nhấn vào nút **\"Bỏ chặn liên hệ\"** (Unblock Contact).\n3. Xác nhận hành động.\nNếu khóa mã hóa của cả hai bên **không thay đổi** kể từ khi chặn, cuộc trò chuyện sẽ ngay lập tức khôi phục về **VERIFIED_ACTIVE** và bạn có thể nhắn tin lại. Nếu khóa đã thay đổi, hệ thống sẽ yêu cầu **xác minh lại 4 lớp**."
+}

@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_bc5fa4f3b584cdc6",
+  "content": "Trong danh sách cuộc trò chuyện và header của khung chat, bạn sẽ thấy:\n- Chấm xanh bên cạnh ảnh đại diện: Người đó đang **online**.\n- Không có chấm hoặc trạng thái mờ: Người đó đang **offline**.\nTrạng thái online được cập nhật theo thời gian thực qua kết nối WebSocket."
+}

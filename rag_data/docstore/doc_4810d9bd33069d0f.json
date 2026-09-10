@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_4810d9bd33069d0f",
+  "content": "Bạn đăng nhập bằng tài khoản Google (Gmail). Trên màn hình đầu tiên, nhấn nút **\"Đăng nhập bằng Google\"** (Sign in with Google), sau đó hoàn tất luồng xác thực Google OAuth2. Sau khi đăng nhập thành công, hệ thống sẽ tự động tải thông tin hồ sơ của bạn (tên, email, ảnh đại diện) và khởi tạo khóa mã hóa cục bộ trên trình duyệt."
+}

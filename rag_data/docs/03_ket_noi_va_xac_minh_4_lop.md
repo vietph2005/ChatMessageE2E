@@ -4,7 +4,7 @@
 Nhập **chính xác địa chỉ Gmail** của người bạn muốn kết nối vào ô tìm kiếm trên thanh bên trái (sidebar). Ứng dụng **chỉ hỗ trợ tìm kiếm chính xác theo Gmail** — bạn phải nhập đầy đủ địa chỉ email, ví dụ: `bob@gmail.com`. Hệ thống không gợi ý danh sách người dùng công khai để bảo vệ quyền riêng tư.
 
 ## Tôi tìm kiếm theo tên được không?
-**Không.** Ứng dụng chỉ cho phép tìm kiếm bằng **địa chỉ Gmail chính xác**. Bạn không thể tìm theo tên hiển thị hay gợi ý bằng một phần tên. Điều này nhằm bảo vệ quyền riêng tư — chỉ người biết chính xác Gmail của bạn mới có thể kết nối với bạn.
+Không. Ứng dụng chỉ cho phép tìm kiếm bằng **địa chỉ Gmail chính xác**. Bạn không thể tìm theo tên hiển thị hay gợi ý bằng một phần tên. Điều này nhằm bảo vệ quyền riêng tư — chỉ người biết chính xác Gmail của bạn mới có thể kết nối với bạn.
 
 ## Làm thế nào để bắt đầu một cuộc trò chuyện với người khác?
 Để bắt đầu cuộc trò chuyện, bạn cần trải qua **quy trình xác minh 4 lớp bắt buộc**:

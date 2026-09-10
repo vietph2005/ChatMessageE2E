@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_649808ecf885cac0",
+  "content": "Ứng dụng hiện hỗ trợ:\n- Tin nhắn văn bản (text)\n- Biểu tượng cảm xúc (emoji)\n- Hình ảnh mã hóa (JPG, PNG, GIF — dung lượng tối đa **5MB**)\nTất cả nội dung đều được mã hóa đầu cuối (E2EE) trước khi gửi. Chưa hỗ trợ voice/video call hay file đính kèm khác trong phiên bản hiện tại."
+}

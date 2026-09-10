@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_c61b7bf9ea37d5b9",
+  "content": "Khi phiên đăng nhập hết hạn, hệ thống sẽ tự động **chuyển hướng bạn về trang đăng nhập** và hiển thị thông báo yêu cầu đăng nhập lại. Chỉ cần nhấn **\"Đăng nhập bằng Google\"** và hoàn tất OAuth flow. Khóa mã hóa cục bộ vẫn được giữ nguyên (trừ khi bạn xóa dữ liệu trình duyệt)."
+}

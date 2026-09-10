@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_e239046134d15f78",
+  "content": "Tuyệt đối không. Khóa riêng tư (Private Key) được tạo ra và lưu trữ **hoàn toàn trên trình duyệt của bạn** (trong IndexedDB) và không bao giờ được gửi lên máy chủ. Đây là nguyên tắc **Zero-Knowledge** — máy chủ không có khả năng giải mã bất kỳ tin nhắn nào của bạn."
+}

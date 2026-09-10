@@ -11,6 +11,7 @@ if hasattr(sys.stdout, "reconfigure"):
     except Exception:
         pass
 
+# NOTE: google.generativeai sẽ deprecated. Cân nâng lên google.genai khi API ổn định.
 import google.generativeai as genai
 
 # Đường dẫn thư mục gốc rag_data
@@ -49,6 +50,16 @@ EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001
 # Đường dẫn ChromaDB
 CHROMA_DB_DIR = BASE_DIR / "vector_db" / "chroma_db"
 COLLECTION_NAME = "chatmessage_faq"
+
+# ── Proposition Indexing (Dual Storage) ──────────────────────────────
+# ByteStore: lưu full parent chunk, liên kết với ChromaDB qua doc_id
+DOCSTORE_DIR = BASE_DIR / "docstore"
+# Số mệnh đề tối đa sinh ra từ mỗi parent chunk
+PROPOSITION_MAX_PER_CHUNK = 8
+# Bỏ qua proposition quá ngắn (< N từ) — thường là câu không đủ nghĩa
+PROPOSITION_MIN_WORDS = 8
+# Số propositions embed mỗi batch (tránh rate limit Gemini API)
+PROPOSITION_BATCH_SIZE = 5
 
 
 def init_gemini():

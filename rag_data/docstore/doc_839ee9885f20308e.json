@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_839ee9885f20308e",
+  "content": "Nếu bạn xóa dữ liệu trình duyệt (cache, IndexedDB), **khóa mã hóa cục bộ sẽ bị mất**. Khi đăng nhập lại, hệ thống sẽ tự động tạo cặp khóa mới và yêu cầu bạn thực hiện lại quy trình xác minh 4 lớp (re-handshake) với từng liên lạc. Đây là thiết kế bảo mật để bảo vệ quyền riêng tư — private key không bao giờ rời khỏi thiết bị của bạn."
+}

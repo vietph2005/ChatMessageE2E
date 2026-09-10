@@ -33,7 +33,7 @@ Mỗi tin nhắn sẽ hiển thị một trong các trạng thái sau:
 Hình ảnh sẽ được mã hóa ngay trên thiết bị của bạn trước khi truyền. Người nhận sẽ thấy ảnh hiển thị trong bong bóng chat sau khi giải mã cục bộ.
 
 ## Ứng dụng hỗ trợ gửi video không?
-**Chưa hỗ trợ.** Phiên bản hiện tại chỉ hỗ trợ gửi hình ảnh (JPG, PNG, GIF tối đa 5MB). Tính năng gửi video và file lớn sẽ được xem xét trong các phiên bản tương lai.
+Chưa hỗ trợ. Phiên bản hiện tại chỉ hỗ trợ gửi hình ảnh (JPG, PNG, GIF tối đa 5MB). Tính năng gửi video và file lớn sẽ được xem xét trong các phiên bản tương lai.
 
 ## Làm thế nào để thu hồi tin nhắn?
 Để **thu hồi tin nhắn cho cả hai phía** (Unsend for Everyone):

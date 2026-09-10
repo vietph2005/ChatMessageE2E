@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_f6fe130eee8abb79",
+  "content": "Bạn **chỉ có thể gửi tin nhắn sau khi hoàn thành đủ 4 lớp xác minh**. Hệ thống sẽ khóa ô nhập tin nhắn cho đến khi:\n- Lớp 1: Cả hai đều có tài khoản Google hợp lệ\n- Lớp 2: Người nhận đã chấp nhận lời mời\n- Lớp 3: Trao đổi khóa mã hóa hoàn tất\n- Lớp 4: Cả hai đã xác nhận mã an toàn\nNếu bất kỳ lớp nào chưa hoàn thành, hãy kiểm tra trạng thái cuộc trò chuyện và hoàn tất bước còn lại."
+}

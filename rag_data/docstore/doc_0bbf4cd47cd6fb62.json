@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_0bbf4cd47cd6fb62",
+  "content": "Giao diện được thiết kế theo phong cách **Facebook Messenger**, bao gồm:\n- **Thanh bên trái (Sidebar)**: Danh sách cuộc trò chuyện, sắp xếp theo tin nhắn gần nhất, badge số tin nhắn chưa đọc, và ô tìm kiếm Gmail.\n- **Khu vực chat giữa**: Bong bóng tin nhắn (tin nhắn của bạn bên phải, tin nhắn người kia bên trái), dấu thời gian, trạng thái đọc.\n- **Bảng thông tin bên phải**: Chi tiết bảo mật, mã an toàn, lịch sử xác minh.\nGiao diện hỗ trợ **chế độ tối (dark mode)** và **responsive** từ điện thoại (360px) đến màn hình 4K (2560px)."
+}

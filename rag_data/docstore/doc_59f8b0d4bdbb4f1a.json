@@ -1,0 +1,4 @@
+{
+  "doc_id": "doc_59f8b0d4bdbb4f1a",
+  "content": "Thông báo **\"Tin nhắn không thể giải mã\"** xảy ra khi dữ liệu tin nhắn bị hỏng hoặc khóa phiên không khớp. Các bước xử lý:\n1. Thử tải lại trang (F5 hoặc Ctrl+R).\n2. Nếu vẫn còn lỗi, kiểm tra xem bạn có đang dùng **đúng trình duyệt** đã khởi tạo khóa ban đầu không.\n3. Nếu bạn vừa đăng nhập trên thiết bị mới, hãy thực hiện **re-handshake** với người đó.\n4. Nếu lỗi vẫn tiếp tục, liên hệ hỗ trợ."
+}

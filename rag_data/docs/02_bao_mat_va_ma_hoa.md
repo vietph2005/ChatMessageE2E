@@ -1,10 +1,10 @@
 # Bảo mật & Mã hóa Đầu cuối (E2EE)
 
 ## Tin nhắn của tôi có bị ai đọc được không?
-**Không.** Ứng dụng sử dụng mã hóa đầu cuối (End-to-End Encryption — E2EE) với thuật toán **AES-256-GCM**. Tin nhắn được mã hóa ngay trên thiết bị của bạn trước khi gửi đi. Máy chủ **chỉ lưu trữ dữ liệu đã mã hóa** — không ai, kể cả nhà phát triển ứng dụng, có thể đọc nội dung tin nhắn của bạn. Chỉ bạn và người nhận (với khóa giải mã cục bộ) mới đọc được.
+Không. Ứng dụng sử dụng mã hóa đầu cuối (End-to-End Encryption — E2EE) với thuật toán **AES-256-GCM**. Tin nhắn được mã hóa ngay trên thiết bị của bạn trước khi gửi đi. Máy chủ **chỉ lưu trữ dữ liệu đã mã hóa** — không ai, kể cả nhà phát triển ứng dụng, có thể đọc nội dung tin nhắn của bạn. Chỉ bạn và người nhận (với khóa giải mã cục bộ) mới đọc được.
 
 ## Khóa riêng tư của tôi có được lưu trên server không?
-**Tuyệt đối không.** Khóa riêng tư (Private Key) được tạo ra và lưu trữ **hoàn toàn trên trình duyệt của bạn** (trong IndexedDB) và không bao giờ được gửi lên máy chủ. Đây là nguyên tắc **Zero-Knowledge** — máy chủ không có khả năng giải mã bất kỳ tin nhắn nào của bạn.
+Tuyệt đối không. Khóa riêng tư (Private Key) được tạo ra và lưu trữ **hoàn toàn trên trình duyệt của bạn** (trong IndexedDB) và không bao giờ được gửi lên máy chủ. Đây là nguyên tắc **Zero-Knowledge** — máy chủ không có khả năng giải mã bất kỳ tin nhắn nào của bạn.
 
 ## Làm thế nào để xem chi tiết bảo mật của một cuộc trò chuyện?
 1. Mở cuộc trò chuyện bạn muốn kiểm tra.

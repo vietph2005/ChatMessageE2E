@@ -85,9 +85,7 @@ Danh sách JSON:"""
         # Làm sạch markdown nếu LLM bọc trong ```json
         if "```" in raw_text:
             raw_text = raw_text.split("```")[1]
-            if raw_text.startswith("json"):
-                raw_text = raw_text[4:]
-            raw_text = raw_text.strip()
+            raw_text = raw_text.lstrip("json").strip()
 
         parsed_queries = json.loads(raw_text)
         if isinstance(parsed_queries, list):

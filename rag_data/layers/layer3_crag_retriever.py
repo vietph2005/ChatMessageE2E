@@ -34,6 +34,14 @@ from config import init_gemini, FAST_MODEL_NAME, EMBEDDING_MODEL_NAME, CHROMA_DB
 import google.generativeai as genai
 import chromadb
 
+# Import DocStore helper tu Proposition Indexer
+# De tra cuu full parent chunk theo doc_id sau khi RRF tim duoc proposition
+try:
+    from proposition_indexer import load_from_docstore
+    _DOCSTORE_AVAILABLE = True
+except ImportError:
+    _DOCSTORE_AVAILABLE = False
+
 # Khởi tạo Gemini
 init_gemini()
 
@@ -101,10 +109,25 @@ def rrf_retrieve(collection, queries: List[str], top_candidates_per_query: int =
                     if doc_id not in doc_lookup:
                         raw_dist = results["distances"][0][rank - 1]
                         sim = max(0.0, min(1.0, 1.0 - raw_dist))
+                        meta = results["metadatas"][0][rank - 1] if results["metadatas"] else {}
+                        proposition_text = results["documents"][0][rank - 1]
+
+                        # ── Proposition Indexing: Dual Storage Lookup ──────────────
+                        # ChromaDB luu proposition ngan -> lay doc_id -> tra DocStore
+                        # -> lay full parent chunk de CRAG Grader va Generator co du ngu canh
+                        parent_content = None
+                        if _DOCSTORE_AVAILABLE:
+                            chunk_doc_id = meta.get("doc_id")
+                            if chunk_doc_id:
+                                parent_content = load_from_docstore(chunk_doc_id)
+
                         doc_lookup[doc_id] = {
                             "id": doc_id,
-                            "content": results["documents"][0][rank - 1],
-                            "metadata": results["metadatas"][0][rank - 1] if results["metadatas"] else {},
+                            # Neu co DocStore: dung full parent chunk
+                            # Fallback: dung proposition text (schema cu / chua ingest lai)
+                            "content": parent_content if parent_content else proposition_text,
+                            "proposition": proposition_text,  # giu lai de debug/log
+                            "metadata": meta,
                             "similarity": round(sim, 4),
                         }
         except Exception as e:
