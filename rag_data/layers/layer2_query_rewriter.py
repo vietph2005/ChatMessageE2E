@@ -24,7 +24,7 @@ PARENT_DIR = CURRENT_DIR.parent
 if str(PARENT_DIR) not in sys.path:
     sys.path.insert(0, str(PARENT_DIR))
 
-from config import init_gemini, FAST_MODEL_NAME
+from config import init_gemini, FAST_MODEL_NAME, is_grok_available, call_grok_chat
 import google.generativeai as genai
 
 # Khởi tạo Gemini
@@ -71,23 +71,48 @@ Câu hỏi gốc của người dùng: "{cleaned_q}"
 
 Danh sách JSON:"""
 
-    try:
-        model = genai.GenerativeModel(
-            model_name=FAST_MODEL_NAME,
-            generation_config={
-                "temperature": 0.4,   # Độ biến thiên vừa phải để tạo góc nhìn phong phú
-                "max_output_tokens": 300,
-            }
+    raw_text = ""
+    # 1. Ưu tiên sử dụng Grok Cloud siêu tốc
+    if is_grok_available():
+        res_grok = call_grok_chat(
+            prompt=prompt,
+            system_instruction="Bạn là chuyên gia RAG Fusion tối ưu câu truy vấn. Trả về định dạng JSON array hợp lệ.",
+            temperature=0.4,
+            max_tokens=500,
         )
-        response = model.generate_content(prompt)
-        raw_text = response.text.strip()
+        if res_grok:
+            raw_text = res_grok.strip()
 
-        # Làm sạch markdown nếu LLM bọc trong ```json
-        if "```" in raw_text:
-            raw_text = raw_text.split("```")[1]
-            raw_text = raw_text.lstrip("json").strip()
+    # 2. Fallback sang Gemini nếu Grok chưa cấu hình hoặc gặp sự cố
+    if not raw_text:
+        try:
+            model = genai.GenerativeModel(
+                model_name=FAST_MODEL_NAME,
+                generation_config={
+                    "temperature": 0.4,   # Độ biến thiên vừa phải để tạo góc nhìn phong phú
+                    "max_output_tokens": 500,
+                }
+            )
+            response = model.generate_content(prompt)
+            try:
+                raw_text = response.text.strip()
+            except Exception:
+                if response.candidates and response.candidates[0].content.parts:
+                    raw_text = response.candidates[0].content.parts[0].text.strip()
+        except Exception as e:
+            print(f"⚠️ [Layer 2 RAG Fusion] Lỗi gọi Gemini: {e}")
 
-        parsed_queries = json.loads(raw_text)
+    try:
+        if not raw_text:
+            return [cleaned_q]
+
+        # Làm sạch markdown nếu LLM bọc trong ```json ... ```
+        clean_json = raw_text
+        if "```" in clean_json:
+            clean_json = clean_json.split("```")[1].lstrip("json").strip()
+
+        parsed_queries = json.loads(clean_json)
+
         if isinstance(parsed_queries, list):
             # Luôn đưa câu hỏi gốc vào đầu danh sách, sau đó là các biến thể (loại trừ trùng lặp)
             fusion_queries = [cleaned_q]
@@ -96,6 +121,7 @@ Danh sách JSON:"""
                 if q_clean and q_clean.lower() != cleaned_q.lower() and q_clean not in fusion_queries:
                     fusion_queries.append(q_clean)
             return fusion_queries
+
 
     except Exception as e:
         print(f"⚠️ [Layer 2 RAG Fusion] Lỗi parse LLM: {e}. Fallback sử dụng câu hỏi gốc.")
@@ -109,27 +135,4 @@ def rewrite_query(question: str) -> str:
     queries = generate_rag_fusion_queries(question, num_queries=2)
     return queries[1] if len(queries) > 1 else queries[0]
 
-
-# ── TEST NHANH LAYER 2 VỚI RAG FUSION ────────────────────────────────────────
-if __name__ == "__main__":
-    print("=" * 70)
-    print("🧪 KIỂM THỬ LAYER 2 — RAG FUSION (MULTI-QUERY GENERATION)")
-    print("=" * 70)
-
-    test_queries = [
-        "đăng nhập bị lỗi",
-        "mã hóa tin nhắn thế nào",
-        "bắt tay 4 lớp là gì",
-        "làm sao để chặn một ai đó"
-    ]
-
-    for q in test_queries:
-        print(f"\n❓ [CÂU HỎI GỐC]: \"{q}\"")
-        queries = generate_rag_fusion_queries(q, num_queries=3)
-        print(f"🚀 [RAG FUSION QUERIES] ({len(queries)} biến thể):")
-        for idx, sub_q in enumerate(queries, 1):
-            tag = "GỐC" if idx == 1 else f"GÓC NHÌN {idx-1}"
-            print(f"   {idx}. [{tag}]: \"{sub_q}\"")
-
-    print("\n" + "=" * 70)
 

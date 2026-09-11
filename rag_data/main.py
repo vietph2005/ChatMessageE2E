@@ -115,19 +115,25 @@ def run_rag_pipeline(question: str, verbose: bool = True) -> Dict[str, Any]:
       Layer 1 -> Layer 2 -> Layer 3 -> Layer 4 -> Layer 5
     """
     global chroma_collection
-    start_time = time.time()
+    pipeline_start = time.time()
     cleaned_q = question.strip()
 
     if verbose:
         print("\n" + "=" * 70)
         print(f"📥 [RAG Pipeline] Nhận câu hỏi: \"{cleaned_q}\"")
+        print("=" * 70)
 
     # ── LAYER 1: INTENT CLASSIFIER ──────────────────────────────────
+    t1_start = time.time()
     intent_res = classify_intent(cleaned_q)
+    t1_elapsed = round(time.time() - t1_start, 3)
+
     if intent_res.get("is_small_talk"):
-        elapsed = round(time.time() - start_time, 3)
+        total_elapsed = round(time.time() - pipeline_start, 3)
         if verbose:
-            print(f"⚡ [Layer 1] Phân loại: XÃ GIAO / SMALL_TALK (Bypass RAG trong {elapsed}s)")
+            print(f"\n[1/5] ⚡ LAYER 1 (⏱️ {t1_elapsed}s): Phân loại -> XÃ GIAO / SMALL_TALK")
+            print(f"      ↪️ Bypass RAG, trả lời trực tiếp trong {total_elapsed}s")
+            print("=" * 70 + "\n")
         return {
             "answer": intent_res.get("direct_reply", "Xin chào! Tôi có thể hỗ trợ gì cho bạn?"),
             "sources": [],
@@ -136,18 +142,26 @@ def run_rag_pipeline(question: str, verbose: bool = True) -> Dict[str, Any]:
         }
 
     if verbose:
-        print("🔍 [Layer 1] Phân loại: CÂU HỎI NGHIỆP VỤ (APP_QUESTION) -> Chuyển Layer 2")
+        print(f"\n[1/5] 🧭 LAYER 1 (⏱️ {t1_elapsed}s): CÂU HỎI NGHIỆP VỤ (app_question) -> Tiếp tục Layer 2")
 
     # ── LAYER 2: QUERY REWRITER (RAG FUSION) ────────────────────────
+    t2_start = time.time()
     queries = generate_rag_fusion_queries(cleaned_q, num_queries=3)
+    t2_elapsed = round(time.time() - t2_start, 3)
+
     if verbose:
-        print(f"🔄 [Layer 2] Đã sinh {len(queries)} câu truy vấn mở rộng:")
+        print(f"\n[2/5] 🔄 LAYER 2 (⏱️ {t2_elapsed}s): RAG Fusion đã sinh {len(queries)} câu truy vấn đa hướng:")
         for idx, q in enumerate(queries, 1):
-            print(f"   {idx}. {q}")
+            tag = "GỐC" if idx == 1 else f"GÓC NHÌN {idx-1}"
+            print(f"      {idx}. [{tag}]: \"{q}\"")
 
     # ── LAYER 3: CRAG RETRIEVER & DOCUMENT GRADER ───────────────────
+    t3_start = time.time()
     if chroma_collection is None:
         chroma_collection = get_chroma_collection()
+
+    if verbose:
+        print(f"\n[3/5] 🔍 LAYER 3: Đang tìm kiếm ChromaDB & chạy CRAG Document Grader...")
 
     crag_res = crag_retrieve_and_grade(
         queries=queries,
@@ -158,22 +172,27 @@ def run_rag_pipeline(question: str, verbose: bool = True) -> Dict[str, Any]:
 
     relevant_docs = crag_res.get("relevant_docs", [])
     has_context = crag_res.get("has_context", False)
+    t3_elapsed = round(time.time() - t3_start, 3)
 
     if verbose:
-        print(f"🎯 [Layer 3] Thu được {len(relevant_docs)} tài liệu sạch sau thẩm định (has_context={has_context})")
+        print(f"      🎯 Kết quả Layer 3 (⏱️ {t3_elapsed}s): {len(relevant_docs)}/{crag_res.get('total_candidates', 0)} tài liệu đạt chuẩn RELEVANT (has_context={has_context})")
 
     # ── LAYER 4: GENERATOR ──────────────────────────────────────────
+    t4_start = time.time()
     gen_res = generate_answer(
         question=cleaned_q,
         relevant_docs=relevant_docs,
         has_context=has_context
     )
+    t4_elapsed = round(time.time() - t4_start, 3)
 
     # Nếu hoàn toàn ngoài phạm vi, không cần chạy Layer 5
     if not has_context or not relevant_docs:
-        elapsed = round(time.time() - start_time, 3)
+        total_elapsed = round(time.time() - pipeline_start, 3)
         if verbose:
-            print(f"ℹ️ [Layer 4] Không có dữ liệu phù hợp (Out of Context) -> Hoàn tất trong {elapsed}s")
+            print(f"\n[4/5] ℹ️ LAYER 4 (⏱️ {t4_elapsed}s): Không có dữ liệu phù hợp (Out of Context)")
+            print(f"⏱️ Hoàn tất xử lý ngoài phạm vi trong {total_elapsed}s")
+            print("=" * 70 + "\n")
         return {
             "answer": gen_res["answer"],
             "sources": [],
@@ -181,7 +200,14 @@ def run_rag_pipeline(question: str, verbose: bool = True) -> Dict[str, Any]:
             "status": "OUT_OF_CONTEXT"
         }
 
+    if verbose:
+        print(f"\n[4/5] 🤖 LAYER 4 (⏱️ {t4_elapsed}s): Đã sinh câu trả lời thành công ({len(gen_res.get('sources', []))} thẻ nguồn tham khảo)")
+
     # ── LAYER 5: VERIFIER (SELF-RAG: HALLUCINATION & USEFULNESS) ────
+    t5_start = time.time()
+    if verbose:
+        print(f"\n[5/5] 🛡️ LAYER 5: Đang thẩm định Ảo giác (Hallucination) & Độ hữu ích (Usefulness)...")
+
     verify_res = verify_and_refine(
         question=cleaned_q,
         answer=gen_res["answer"],
@@ -189,10 +215,12 @@ def run_rag_pipeline(question: str, verbose: bool = True) -> Dict[str, Any]:
         has_context=True,
         max_retries=1
     )
+    t5_elapsed = round(time.time() - t5_start, 3)
+    total_elapsed = round(time.time() - pipeline_start, 3)
 
-    elapsed = round(time.time() - start_time, 3)
     if verbose:
-        print(f"🛡️ [Layer 5] Trạng thái kiểm định: {verify_res.get('status')} | Tổng thời gian: {elapsed}s")
+        print(f"      🏁 Kết quả Layer 5 (⏱️ {t5_elapsed}s): Trạng thái -> {verify_res.get('status')}")
+        print(f"⏱️ Tổng thời gian pipeline 5 Layers: {total_elapsed}s")
         print("=" * 70 + "\n")
 
     return {
@@ -201,6 +229,7 @@ def run_rag_pipeline(question: str, verbose: bool = True) -> Dict[str, Any]:
         "has_context": True,
         "status": verify_res.get("status", "APPROVED")
     }
+
 
 
 # ════════════════════════════════════════════════════════════════════

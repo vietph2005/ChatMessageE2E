@@ -35,7 +35,8 @@ def main():
     print("   2. Mã hóa tin nhắn E2EE dùng thuật toán gì?")
     print("   3. Khi mất mạng thì tin nhắn có bị mất không?")
     print("   4. Re-handshake là gì?")
-    print("   (Gõ 'exit' hoặc 'quit' để thoát)")
+    show_logs = True
+    print("💡 Gõ '/log' để bật/tắt hiển thị luồng log chi tiết (Mặc định: BẬT)")
     print("-" * 65)
 
     while True:
@@ -46,13 +47,20 @@ def main():
             if user_input.lower() in ("exit", "quit", "q"):
                 print("\n👋 Tạm biệt!")
                 break
+            if user_input.lower() == "/log":
+                show_logs = not show_logs
+                status_text = "BẬT" if show_logs else "TẮT"
+                print(f"⚙️ [Cài đặt] Hiển thị log chi tiết: {status_text}")
+                continue
 
-            print("\n⏳ Đang suy luận qua 5 tầng RAG...")
-            result = run_rag_pipeline(user_input, verbose=False)
+            if not show_logs:
+                print("\n⏳ Đang suy luận qua 5 tầng RAG...")
+            result = run_rag_pipeline(user_input, verbose=show_logs)
 
             print("\n" + "─" * 60)
             print(f"🤖 Bot trả lời:\n{result['answer']}")
             print("─" * 60)
+
 
             sources = result.get("sources", [])
             if sources:

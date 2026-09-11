@@ -46,13 +46,24 @@ import google.generativeai as genai
 init_gemini()
 
 
+def _safe_get_gemini_text(response) -> str:
+    try:
+        return response.text.strip()
+    except Exception:
+        if hasattr(response, "candidates") and response.candidates:
+            cand = response.candidates[0]
+            if hasattr(cand, "content") and cand.content and hasattr(cand.content, "parts") and cand.content.parts:
+                return cand.content.parts[0].text.strip()
+    return ""
+
+
 # ════════════════════════════════════════════════════════════════════
 # 1. BƯỚC 5a: Hallucination Grader (Groundedness Check)
 # ════════════════════════════════════════════════════════════════════
 def grade_hallucination(answer: str, docs: List[Dict[str, Any]]) -> Tuple[bool, str]:
     """
-    Kiểm tra xem câu trả lời có được grounded hoàn toàn trong tài liệu tham khảo không.
-    Ưu tiên sử dụng mô hình Grok (xAI) để thẩm định chéo độc lập, tránh thiên vị xác nhận.
+    Kiểm tra xem câu trả lời có bịa đặt hoặc suy diễn thông tin ngoài tài liệu không.
+    Ưu tiên sử dụng mô hình Gemini để thẩm định độc lập, fallback sang Grok.
 
     Returns:
         Tuple[bool, str]: (is_grounded: True/False, reason: str)
@@ -79,7 +90,21 @@ Chỉ trả lời theo định dạng chính xác 2 dòng:
 GRADE: yes hoặc no
 REASON: giải thích ngắn gọn trong 1 câu."""
 
-    # 1. Ưu tiên kiểm định chéo bằng Grok (xAI)
+    # 1. Ưu tiên kiểm định độc lập bằng Gemini (Google AI Studio)
+    try:
+        model = genai.GenerativeModel(
+            model_name=FAST_MODEL_NAME,
+            generation_config={"temperature": 0.0, "max_output_tokens": 256}
+        )
+        resp = model.generate_content(prompt)
+        res_gemini = _safe_get_gemini_text(resp)
+        if res_gemini:
+            is_grounded = "grade: yes" in res_gemini.lower()
+            return is_grounded, f"[Gemini - {FAST_MODEL_NAME}] {res_gemini}"
+    except Exception as e:
+        print(f"⚠️ [Layer 5] Gemini gặp sự cố ({e}), tự động fallback sang Grok...")
+
+    # 2. Fallback sang Grok nếu Gemini lỗi hoặc chạm hạn mức
     if is_grok_available():
         res_grok = call_grok_chat(
             prompt=prompt,
@@ -89,21 +114,9 @@ REASON: giải thích ngắn gọn trong 1 câu."""
         )
         if res_grok:
             is_grounded = "grade: yes" in res_grok.lower()
-            return is_grounded, f"[Grok - {GROK_MODEL_NAME}] {res_grok}"
-        print(f"⚠️ [Layer 5] Grok API không khả dụng, tự động fallback về Gemini...")
+            return is_grounded, f"[Grok Fallback - {GROK_MODEL_NAME}] {res_grok}"
 
-    # 2. Fallback về Gemini nếu chưa có key Grok hoặc lỗi mạng
-    try:
-        model = genai.GenerativeModel(
-            model_name=FAST_MODEL_NAME,
-            generation_config={"temperature": 0.0, "max_output_tokens": 100}
-        )
-        res_gemini = model.generate_content(prompt).text.strip()
-        is_grounded = "grade: yes" in res_gemini.lower()
-        return is_grounded, f"[Gemini Fallback - {FAST_MODEL_NAME}] {res_gemini}"
-    except Exception as e:
-        print(f"⚠️ [Layer 5] Lỗi Hallucination Grader: {e}. Mặc định coi là grounded.")
-        return True, "Bỏ qua do lỗi grader"
+    return True, "Bỏ qua do lỗi grader"
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -112,7 +125,7 @@ REASON: giải thích ngắn gọn trong 1 câu."""
 def grade_usefulness(question: str, answer: str) -> Tuple[bool, str]:
     """
     Kiểm tra xem câu trả lời có thực sự trả lời đúng câu hỏi người dùng không.
-    Ưu tiên sử dụng mô hình Grok (xAI) để thẩm định độ hữu ích.
+    Ưu tiên sử dụng mô hình Gemini để thẩm định độc lập, fallback sang Grok.
 
     Returns:
         Tuple[bool, str]: (is_useful: True/False, reason: str)
@@ -134,7 +147,21 @@ Chỉ trả lời theo định dạng chính xác 2 dòng:
 GRADE: yes hoặc no
 REASON: giải thích ngắn gọn trong 1 câu."""
 
-    # 1. Ưu tiên kiểm định chéo bằng Grok (xAI)
+    # 1. Ưu tiên kiểm định độc lập bằng Gemini (Google AI Studio)
+    try:
+        model = genai.GenerativeModel(
+            model_name=FAST_MODEL_NAME,
+            generation_config={"temperature": 0.0, "max_output_tokens": 256}
+        )
+        resp = model.generate_content(prompt)
+        res_gemini = _safe_get_gemini_text(resp)
+        if res_gemini:
+            is_useful = "grade: yes" in res_gemini.lower()
+            return is_useful, f"[Gemini - {FAST_MODEL_NAME}] {res_gemini}"
+    except Exception as e:
+        print(f"⚠️ [Layer 5] Gemini gặp sự cố ({e}), tự động fallback sang Grok...")
+
+    # 2. Fallback sang Grok nếu Gemini lỗi
     if is_grok_available():
         res_grok = call_grok_chat(
             prompt=prompt,
@@ -144,21 +171,9 @@ REASON: giải thích ngắn gọn trong 1 câu."""
         )
         if res_grok:
             is_useful = "grade: yes" in res_grok.lower()
-            return is_useful, f"[Grok - {GROK_MODEL_NAME}] {res_grok}"
-        print(f"⚠️ [Layer 5] Grok API không khả dụng, tự động fallback về Gemini...")
+            return is_useful, f"[Grok Fallback - {GROK_MODEL_NAME}] {res_grok}"
 
-    # 2. Fallback về Gemini
-    try:
-        model = genai.GenerativeModel(
-            model_name=FAST_MODEL_NAME,
-            generation_config={"temperature": 0.0, "max_output_tokens": 100}
-        )
-        res_gemini = model.generate_content(prompt).text.strip()
-        is_useful = "grade: yes" in res_gemini.lower()
-        return is_useful, f"[Gemini Fallback - {FAST_MODEL_NAME}] {res_gemini}"
-    except Exception as e:
-        print(f"⚠️ [Layer 5] Lỗi Usefulness Grader: {e}. Mặc định coi là useful.")
-        return True, "Bỏ qua do lỗi grader"
+    return True, "Bỏ qua do lỗi grader"
 
 
 
@@ -212,12 +227,15 @@ def verify_and_refine(
 
         # Kịch bản hoàn hảo: Cả 2 đều đạt
         if is_grounded and is_useful:
+            status = "APPROVED" if attempt == 0 else "REFINED"
+            print(f"   ✅ [Layer 5] Thẩm định lần {attempt+1} ĐẠT CHUẨN ({status}) — Grounded: True, Useful: True")
             return {
                 "final_answer": current_answer,
                 "is_grounded": True,
                 "is_useful": True,
-                "status": "APPROVED" if attempt == 0 else "REFINED",
+                "status": status,
             }
+
 
         # Nếu phát hiện ảo giác (Hallucinated) và còn lượt thử -> Sinh lại với temperature 0.0
         if not is_grounded and attempt < max_retries:
@@ -275,32 +293,3 @@ CÂU TRẢ LỜI (Chỉ nêu những gì tài liệu có):"""
         "status": status,
     }
 
-
-# ── TEST NHANH LAYER 5 ───────────────────────────────────────────────────────
-if __name__ == "__main__":
-    print("=" * 70)
-    print("🧪 KIỂM THỬ LAYER 5 — VERIFICATION (HALLUCINATION & USEFULNESS)")
-    print("=" * 70)
-
-    # Tài liệu mẫu về ChatMessage
-    mock_docs = [
-        {
-            "content": "ChatMessage sử dụng mã hóa AES-256-GCM để mã hóa tin nhắn. Khóa phiên được trao đổi qua giao thức ECDH (X25519)."
-        }
-    ]
-
-    # Test 1: Câu trả lời chuẩn (Grounded & Useful)
-    print("\n--- TEST 1: CÂU TRẢ LỜI CHUẨN XÁC ---")
-    good_ans = "ChatMessage sử dụng thuật toán AES-256-GCM để mã hóa tin nhắn và giao thức ECDH (X25519) để trao đổi khóa."
-    res1 = verify_and_refine("Mã hóa của ChatMessage ra sao?", good_ans, mock_docs, has_context=True)
-    print(f"Status: {res1['status']} | Grounded: {res1['is_grounded']} | Useful: {res1['is_useful']}")
-    print(f"Final Answer: {res1['final_answer']}")
-
-    # Test 2: Câu trả lời bị ảo giác (chém gió thêm thuật toán RSA 4096 không có trong tài liệu)
-    print("\n--- TEST 2: CÂU TRẢ LỜI BỊ ẢO GIÁC (HALLUCINATED) ---")
-    bad_ans = "ChatMessage sử dụng mã hóa lượng tử kết hợp với khóa RSA 4096-bit siêu cấp và công nghệ blockchain."
-    res2 = verify_and_refine("Bảo mật ChatMessage thế nào?", bad_ans, mock_docs, has_context=True)
-    print(f"Status: {res2['status']} | Grounded: {res2['is_grounded']} | Useful: {res2['is_useful']}")
-    print(f"Final Answer (Sau khi sửa lỗi): {res2['final_answer']}")
-
-    print("\n" + "=" * 70)

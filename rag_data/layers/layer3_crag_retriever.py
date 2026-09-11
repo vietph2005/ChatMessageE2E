@@ -30,7 +30,7 @@ PARENT_DIR = CURRENT_DIR.parent
 if str(PARENT_DIR) not in sys.path:
     sys.path.insert(0, str(PARENT_DIR))
 
-from config import init_gemini, FAST_MODEL_NAME, EMBEDDING_MODEL_NAME, CHROMA_DB_DIR, COLLECTION_NAME
+from config import init_gemini, FAST_MODEL_NAME, EMBEDDING_MODEL_NAME, CHROMA_DB_DIR, COLLECTION_NAME, is_grok_available, call_grok_chat
 import google.generativeai as genai
 import chromadb
 
@@ -167,20 +167,36 @@ Tài liệu tham khảo:
 Đoạn tài liệu này có hữu ích và liên quan trực tiếp đến câu hỏi không?
 Chỉ trả lời duy nhất: "yes" hoặc "no"."""
 
+    # 1. Ưu tiên sử dụng Grok Cloud siêu tốc
+    if is_grok_available():
+        res_grok = call_grok_chat(prompt=prompt, temperature=0.0, max_tokens=15)
+        if res_grok:
+            verdict = res_grok.strip().lower()
+            return "yes" in verdict
+
+    # 2. Fallback sang Gemini
     try:
         model = genai.GenerativeModel(
             model_name=FAST_MODEL_NAME,
             generation_config={
                 "temperature": 0.0,
-                "max_output_tokens": 10,
+                "max_output_tokens": 15,
             }
         )
         response = model.generate_content(prompt)
-        verdict = response.text.strip().lower()
+        verdict = ""
+        try:
+            verdict = response.text.strip().lower()
+        except Exception:
+            if response.candidates and response.candidates[0].content.parts:
+                verdict = response.candidates[0].content.parts[0].text.strip().lower()
+            else:
+                verdict = "yes"
         return "yes" in verdict
     except Exception as e:
         print(f"⚠️ [Layer 3 CRAG Grader] Lỗi LLM grading: {e}. Mặc định giữ lại.")
         return True
+
 
 
 def crag_retrieve_and_grade(
@@ -246,36 +262,3 @@ def crag_retrieve_and_grade(
         "total_candidates": len(candidates)
     }
 
-
-# ── TEST NHANH LAYER 3 ───────────────────────────────────────────────────────
-if __name__ == "__main__":
-    print("=" * 70)
-    print("🧪 KIỂM THỬ LAYER 3 — CRAG RETRIEVER & DOCUMENT GRADER")
-    print("=" * 70)
-
-    # Giả lập danh sách queries từ Layer 2
-    mock_queries = [
-        "ChatMessage mã hóa tin nhắn thế nào?",
-        "Cơ chế bảo mật E2EE và trao đổi khóa ECDH trong ChatMessageE2E",
-        "Thuật toán mã hóa AES-256-GCM trong ChatMessageE2E"
-    ]
-
-    print(f"📥 Input Queries ({len(mock_queries)} queries):")
-    for idx, q in enumerate(mock_queries, 1):
-        print(f"   {idx}. {q}")
-
-    col = get_chroma_collection()
-    print(f"\n📦 Số lượng chunks hiện có trong ChromaDB: {col.count()}")
-
-    result = crag_retrieve_and_grade(mock_queries, collection=col, top_k=3, verbose=True)
-
-    print(f"\n🎯 KẾT QUẢ CRAG:")
-    print(f"   • has_context    : {result['has_context']}")
-    print(f"   • Số doc relevant: {len(result['relevant_docs'])}/{result['total_candidates']}")
-
-    for idx, d in enumerate(result["relevant_docs"], 1):
-        print(f"\n   📄 [Doc {idx}] {d['metadata'].get('category')} — {d['metadata'].get('question')}")
-        print(f"      Similarity: {d['similarity']} | RRF Score: {d.get('rrf_score')}")
-        print(f"      Trích đoạn: {d['content'][:150]}...")
-
-    print("\n" + "=" * 70)

@@ -22,7 +22,7 @@ PARENT_DIR = CURRENT_DIR.parent
 if str(PARENT_DIR) not in sys.path:
     sys.path.insert(0, str(PARENT_DIR))
 
-from config import init_gemini, MAIN_MODEL_NAME
+from config import init_gemini, MAIN_MODEL_NAME, is_grok_available, call_grok_chat
 import google.generativeai as genai
 
 # Khởi tạo Gemini
@@ -122,25 +122,39 @@ def generate_answer(
 
     # 2. Kịch bản: Có tài liệu tham khảo -> Gọi LLM sinh câu trả lời
     prompt = build_generation_prompt(question, relevant_docs)
+    answer_text = ""
 
-    try:
-        model = genai.GenerativeModel(
-            model_name=MAIN_MODEL_NAME,
-            generation_config={
-                "temperature": 0.2,       # Nhiệt độ thấp đảm bảo bám sát sự thật
-                "max_output_tokens": 1024, # Đủ dài cho câu trả lời chi tiết
-                "top_p": 0.8,
-            }
+    # 1. Ưu tiên sử dụng Grok Cloud siêu tốc
+    if is_grok_available():
+        res_grok = call_grok_chat(
+            prompt=prompt,
+            system_instruction="Bạn là trợ lý AI chuyên hỗ trợ kỹ thuật ChatMessageE2E. Chỉ trả lời dựa trên tài liệu được cung cấp.",
+            temperature=0.2,
+            max_tokens=1024
         )
-        response = model.generate_content(prompt)
-        answer_text = response.text.strip()
+        if res_grok:
+            answer_text = res_grok.strip()
 
-    except Exception as e:
-        print(f"⚠️ [Layer 4 Generator] Lỗi khi gọi Gemini: {e}")
-        answer_text = (
-            "Xin lỗi bạn, hệ thống AI tạm thời gặp sự cố khi xử lý câu trả lời. "
-            "Tuy nhiên, tài liệu liên quan đã được tìm thấy, bạn có thể tham khảo mục nguồn bên dưới."
-        )
+    # 2. Fallback sang Gemini nếu Grok chưa cấu hình hoặc gặp lỗi
+    if not answer_text:
+        try:
+            model = genai.GenerativeModel(
+                model_name=MAIN_MODEL_NAME,
+                generation_config={
+                    "temperature": 0.2,       # Nhiệt độ thấp đảm bảo bám sát sự thật
+                    "max_output_tokens": 1024, # Đủ dài cho câu trả lời chi tiết
+                    "top_p": 0.8,
+                }
+            )
+            response = model.generate_content(prompt)
+            answer_text = response.text.strip()
+
+        except Exception as e:
+            print(f"⚠️ [Layer 4 Generator] Lỗi khi gọi Gemini: {e}")
+            answer_text = (
+                "Xin lỗi bạn, hệ thống AI tạm thời gặp sự cố khi xử lý câu trả lời. "
+                "Tuy nhiên, tài liệu liên quan đã được tìm thấy, bạn có thể tham khảo mục nguồn bên dưới."
+            )
 
     # 3. Chuẩn hóa format `sources` đúng chuẩn với Java/Frontend DTO
     sources = [
@@ -159,48 +173,3 @@ def generate_answer(
         "has_context": True,
     }
 
-
-# ── TEST NHANH LAYER 4 ───────────────────────────────────────────────────────
-if __name__ == "__main__":
-    print("=" * 70)
-    print("🧪 KIỂM THỬ LAYER 4 — GENERATOR")
-    print("=" * 70)
-
-    # Giả lập tài liệu relevant từ Layer 3
-    mock_docs = [
-        {
-            "id": "sec_01",
-            "content": (
-                "ChatMessageE2E sử dụng cơ chế bắt tay 4 lớp (4-Layer Handshake) trước khi nhắn tin:\n"
-                "1. Bước 1: Trao đổi khóa công khai ECDH (X25519) giữa Alice và Bob.\n"
-                "2. Bước 2: Hai bên tính toán Secret Key chung bằng hàm HKDF-SHA256.\n"
-                "3. Bước 3: Xác thực tính toàn vẹn danh tính bằng chữ ký Ed25519.\n"
-                "4. Bước 4: Thiết lập phiên chat và bắt đầu mã hóa từng tin nhắn bằng AES-256-GCM."
-            ),
-            "metadata": {
-                "category": "Bảo mật & Bắt tay",
-                "question": "Quy trình bắt tay 4 lớp diễn ra như thế nào?"
-            },
-            "similarity": 0.9412
-        }
-    ]
-
-    # Test 1: Có context
-    print("\n--- TEST 1: CÂU HỎI CÓ TÀI LIỆU LIÊN QUAN ---")
-    q1 = "Bắt tay 4 lớp trong ChatMessage hoạt động thế nào?"
-    print(f"❓ Câu hỏi: {q1}")
-    res1 = generate_answer(q1, mock_docs, has_context=True)
-    print(f"\n🤖 Câu trả lời:\n{res1['answer']}")
-    print(f"\n📚 Nguồn tham khảo ({len(res1['sources'])} nguồn):")
-    for s in res1["sources"]:
-        print(f"   • [{s['category']}] {s['question']} (Độ liên quan: {s['similarity']:.1%})")
-
-    # Test 2: Ngoài phạm vi (Out of context)
-    print("\n--- TEST 2: CÂU HỎI NGOÀI PHẠM VI (KHÔNG CÓ CONTEXT) ---")
-    q2 = "Hôm nay chứng khoán tăng hay giảm?"
-    print(f"❓ Câu hỏi: {q2}")
-    res2 = generate_answer(q2, [], has_context=False)
-    print(f"\n🤖 Câu trả lời:\n{res2['answer']}")
-    print(f"   has_context: {res2['has_context']}")
-
-    print("\n" + "=" * 70)

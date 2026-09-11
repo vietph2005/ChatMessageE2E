@@ -42,10 +42,11 @@ else:
 GROK_MODEL_NAME = os.getenv("GROK_MODEL", DEFAULT_GROK_MODEL)
 GROK_API_BASE_URL = os.getenv("GROK_API_BASE_URL", DEFAULT_GROK_URL)
 
-# Tên mô hình Gemini (Cập nhật phiên bản tương thích với API key của bạn)
-FAST_MODEL_NAME = os.getenv("FAST_MODEL", "gemini-3.6-flash")
-MAIN_MODEL_NAME = os.getenv("MAIN_MODEL", "gemini-3.6-flash")
+# Tên mô hình Gemini (gemini-3.5-flash có hạn ngạch miễn phí lớn, tránh giới hạn 20 request/ngày của bản 3.6-flash)
+FAST_MODEL_NAME = os.getenv("FAST_MODEL", "gemini-3.5-flash")
+MAIN_MODEL_NAME = os.getenv("MAIN_MODEL", "gemini-3.5-flash")
 EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001")
+
 
 # Đường dẫn ChromaDB
 CHROMA_DB_DIR = BASE_DIR / "vector_db" / "chroma_db"

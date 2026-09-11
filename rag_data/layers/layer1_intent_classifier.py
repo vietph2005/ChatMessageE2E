@@ -19,7 +19,7 @@ PARENT_DIR = CURRENT_DIR.parent
 if str(PARENT_DIR) not in sys.path:
     sys.path.insert(0, str(PARENT_DIR))
 
-from config import init_gemini, FAST_MODEL_NAME
+from config import init_gemini, FAST_MODEL_NAME, call_grok_chat, is_grok_available
 import google.generativeai as genai
 
 # Khởi tạo Gemini
@@ -35,7 +35,7 @@ FAST_SMALL_TALK_KEYWORDS = {
 
 def is_obvious_small_talk(question: str) -> bool:
     """Kiểm tra nhanh bằng rule-based để không cần gọi LLM nếu chỉ là câu chào đơn giản."""
-    normalized = question.strip().lower()
+    normalized = question.strip().strip("!?.,~ ").lower()
     return normalized in FAST_SMALL_TALK_KEYWORDS
 
 
@@ -74,12 +74,32 @@ def classify_intent(question: str) -> Dict[str, Any]:
 
 Nhiệm vụ: Phân loại câu hỏi của người dùng vào 1 trong 2 nhóm:
 - "small_talk": Câu chào hỏi, cảm ơn, khen chê, trò chuyện xã giao hoặc không liên quan đến ứng dụng.
-- "app_question": Câu hỏi về tính năng, bảo mật E2EE, đăng nhập Google, lỗi kỹ thuật, tài khoản hoặc cách dùng ChatMessage.
+- "app_question": Câu hỏi về tính năng, bảo mật E2EE, bắt tay 4 lớp, đăng nhập Google, lỗi kỹ thuật, tài khoản hoặc cách dùng ChatMessage (kể cả khi không nhắc rõ từ ChatMessage).
 
 Câu hỏi: "{cleaned_q}"
 
 Chỉ trả lời duy nhất một từ: "small_talk" hoặc "app_question"."""
 
+    # Ưu tiên sử dụng Grok Cloud siêu tốc
+    if is_grok_available():
+        res_grok = call_grok_chat(prompt=prompt, temperature=0.0, max_tokens=10)
+        if res_grok:
+            verdict = res_grok.strip().lower()
+            is_small_talk = "small_talk" in verdict
+            if is_small_talk:
+                return {
+                    "intent": "small_talk",
+                    "is_small_talk": True,
+                    "direct_reply": _generate_direct_reply(cleaned_q)
+                }
+            else:
+                return {
+                    "intent": "app_question",
+                    "is_small_talk": False,
+                    "direct_reply": None
+                }
+
+    # Fallback sang Gemini
     try:
         model = genai.GenerativeModel(FAST_MODEL_NAME)
         response = model.generate_content(prompt)
@@ -111,41 +131,21 @@ Chỉ trả lời duy nhất một từ: "small_talk" hoặc "app_question"."""
 
 def _generate_direct_reply(question: str) -> str:
     """Sinh câu trả lời thân thiện cho small talk."""
-    try:
-        model = genai.GenerativeModel(FAST_MODEL_NAME)
-        prompt = f"""Bạn là trợ lý AI hỗ trợ kỹ thuật của ChatMessageE2E.
+    prompt = f"""Bạn là trợ lý AI hỗ trợ kỹ thuật của ChatMessageE2E.
 Hãy trả lời câu giao tiếp sau một cách ngắn gọn, thân thiện, lịch sự và gợi mở người dùng hỏi về ứng dụng ChatMessage:
 User: "{question}"
 Bot:"""
+
+    if is_grok_available():
+        res = call_grok_chat(prompt=prompt, temperature=0.3, max_tokens=150)
+        if res:
+            return res.strip()
+
+    try:
+        model = genai.GenerativeModel(FAST_MODEL_NAME)
         res = model.generate_content(prompt)
         return res.text.strip()
     except Exception:
         return "Xin chào! Tôi là trợ lý ảo hỗ trợ ứng dụng ChatMessage. Tôi có thể giúp gì cho bạn hôm nay?"
 
 
-# ── TEST NHANH LAYER 1 ───────────────────────────────────────────────────────
-if __name__ == "__main__":
-    print("=" * 60)
-    print("🧪 KIỂM THỬ LAYER 1 — INTENT CLASSIFIER")
-    print("=" * 60)
-
-    test_queries = [
-        "Xin chào bạn!",
-        "Tôi bị lỗi không đăng nhập được bằng Google",
-        "Hôm nay thời tiết đẹp quá nhỉ",
-        "ChatMessage mã hóa tin nhắn bằng thuật toán gì?",
-        "Cảm ơn bạn nhiều nha",
-        "Làm sao để tìm kiếm bạn bè qua email?"
-    ]
-
-    for q in test_queries:
-        result = classify_intent(q)
-        intent = result["intent"]
-        reply = result.get("direct_reply")
-        print(f"\n❓ Câu hỏi : \"{q}\"")
-        print(f"👉 Phân loại: [{intent.upper()}]")
-        if reply:
-            print(f"💬 Trả lời trực tiếp: {reply}")
-        else:
-            print(f"➡️  Chuyển tiếp sang Layer 2 (Query Rewriter)...")
-    print("\n" + "=" * 60)
