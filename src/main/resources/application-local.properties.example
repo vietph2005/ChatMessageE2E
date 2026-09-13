@@ -1,0 +1,6 @@
+# Copy this file to application-local.properties for live local overrides
+# DO NOT COMMIT application-local.properties (Strictly excluded via .gitignore)
+
+# MONGODB_URI=mongodb://localhost:27017/chat_message_e2e
+# GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+# JWT_SECRET=your-256-bit-custom-secret-key-here
