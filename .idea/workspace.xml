@@ -5,16 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0c904694-190c-4a02-a6f6-746ed077b33c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/controller/RoomController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/entities/ChatMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/entities/Room.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/repository/RoomRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/AppShell.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/AppShell.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/hooks/useChat.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/services/stompClient.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/services/stompClient.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/websocket/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/chat/infrastructure/websocket/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -69,6 +78,11 @@
     &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\phamh\\IdeaProjects\\TestSpec\\ChatMessage\\ChatMessageE2E\\frontend\\node_modules\\typescript\\lib&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="org.example.chat.entities" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="ChatMessageE2EApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="ChatMessageE2E" />
@@ -99,6 +113,7 @@
       <workItem from="1788927306559" duration="968000" />
       <workItem from="1788963172324" duration="599000" />
       <workItem from="1789230546079" duration="2123000" />
+      <workItem from="1789819829367" duration="4714000" />
     </task>
     <servers />
   </component>

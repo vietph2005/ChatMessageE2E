@@ -49,21 +49,21 @@
         </dependency>
 
         <!-- Spring Security & OAuth2 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>-->
+<!--        </dependency>-->
 
         <!-- Google API Client for Token Verification -->
-        <dependency>
-            <groupId>com.google.api-client</groupId>
-            <artifactId>google-api-client</artifactId>
-            <version>${google-api-client.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.google.api-client</groupId>-->
+<!--            <artifactId>google-api-client</artifactId>-->
+<!--            <version>${google-api-client.version}</version>-->
+<!--        </dependency>-->
 
         <!-- JWT for Stateless Auth -->
         <dependency>
