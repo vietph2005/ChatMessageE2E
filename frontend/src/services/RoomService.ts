@@ -20,11 +20,13 @@ export const createRoomApi = async (roomId: string): Promise<Room> => {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || 'Không thể tạo phòng chat. Vui lòng thử lại.');
+    const errorData = await response.json().catch(() => null);
+    const errorMsg = errorData?.message || 'Không thể tạo phòng chat. Vui lòng thử lại.';
+    throw new Error(errorMsg);
   }
 
-  return response.json();
+  const result = await response.json();
+  return result?.data ? result.data : result;
 };
 
 /**
@@ -42,9 +44,11 @@ export const joinRoomApi = async (roomId: string): Promise<Room> => {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || 'Phòng không tồn tại hoặc đã xảy ra lỗi.');
+    const errorData = await response.json().catch(() => null);
+    const errorMsg = errorData?.message || 'Phòng không tồn tại hoặc đã xảy ra lỗi.';
+    throw new Error(errorMsg);
   }
 
-  return response.json();
+  const result = await response.json();
+  return result?.data ? result.data : result;
 };
